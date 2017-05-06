@@ -1,0 +1,12 @@
+#goal definition
+int16 id    #0 - otvaranje grippera, 1 - zatvaranje grippera, 2 - pocetni polozaj, 3 - zeljeni polozaj, 4 - prekid
+geometry_msgs/Pose pose  #point - position, quaternion - orientation
+---
+#result definition
+int16 id
+int16 status
+geometry_msgs/Pose pose
+---
+#feedback definition
+int16 id
+float32 status

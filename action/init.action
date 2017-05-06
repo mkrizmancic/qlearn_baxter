@@ -1,0 +1,10 @@
+# Define the goal
+float64[7] goal_left
+float64[7] goal_right
+string arm
+---
+# Define the result
+string result
+---
+# Define a feedback message
+uint32 feedback
