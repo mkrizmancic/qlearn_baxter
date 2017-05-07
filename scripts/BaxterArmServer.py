@@ -17,9 +17,7 @@ from Utils import Utils
 VALID_LIMB_JOINTS = 1
 INVALID_LIMB_JOINTS = 0
 
-
 class BaxterArm:
-
     def __init__(self, arm):
         self.as_goal = {'left': baxterGoal(), 'right': baxterGoal()}
         self.as_feed = {'left': baxterFeedback(), 'right': baxterFeedback()}
@@ -56,7 +54,6 @@ class BaxterArm:
         point_target.orientation.w = self.as_goal[arm].pose.orientation.w
 
     def execute(self, goal, arm):
-
         if arm == 'right':
             chosen_arm = self.right_arm
             chosen_gripper = self.right_gripper
@@ -80,7 +77,6 @@ class BaxterArm:
 
         if goal.id == 1: 
             print 'ODLAZAK NA ZADANU POZICIJU'
-            
             self.set_goal(pose_target,arm)
             limb_joints = ik_solver.ik_solve(arm, Point(pose_target.position.x+0.07, pose_target.position.y, pose_target.position.z+0.05), pose_target.orientation)
             
@@ -89,7 +85,6 @@ class BaxterArm:
                 self.as_res[arm].status = VALID_LIMB_JOINTS 
                 self.as_res[arm].id = self.as_goal[arm].id
                 chosen_server.set_succeeded(result=self.as_res[arm])
-
             else:
                 self.as_res[arm].status = 0
                 self.as_res[arm].id = 0
@@ -97,24 +92,17 @@ class BaxterArm:
         
         if goal.id == 2:
             print 'OTVARANJE GRIPPERA'
-            
-            chosen_gripper.open()       
-            
+            chosen_gripper.open()
             self.as_res[arm].status = VALID_LIMB_JOINTS
             self.as_res[arm].id = self.as_goal[arm].id
-            
             chosen_server.set_succeeded(result=self.as_res[arm])
             
         if goal.id == 3:
             print 'ZATVARANJE GRIPPERA'
-            
             chosen_gripper.close()
-
             self.as_res[arm].status = VALID_LIMB_JOINTS
             self.as_res[arm].id = self.as_goal[arm].id
-
             chosen_server.set_succeeded(result = self.as_res[arm])
-            
             
     def execute_right(self,goal):   
         self.execute(goal,'right')
@@ -124,7 +112,6 @@ class BaxterArm:
 
     def start(self):
         self.action_server_left.start()
-        
         moveit_commander.roscpp_initialize(sys.argv)
         self.robot= moveit_commander.RobotCommander()
 

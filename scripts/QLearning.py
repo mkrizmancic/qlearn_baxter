@@ -5,6 +5,7 @@ import sys
 from math import pow
 from random import randint
 
+from BaxterArmClient import BaxterArmClient
 from Util import *
 
 class QLearn:
@@ -93,7 +94,6 @@ class QLearn:
             current = maxState
             actions.append(current)
         return actions
-        
 
 class StateGenerator:
     """
@@ -225,9 +225,12 @@ class StateGenerator:
 
 
 if __name__ == '__main__':
+    # Get user input
     n = input ("Unesite broj kolutova:  ")
-    gama = 0.95 #input ("Unesite discount faktor:  ")
-    #TODO assert gama > 0
+    gama = float (raw_input ("Unesite discount faktor:  ") or 0.95)
+    while gama <= 0 and gama > 1:
+        print ("Neispravan unos. Vrijednost mora biti u intervalu <0, 1]")
+        gama = float (raw_input ("Unesite discount faktor:  ") or 0.95)
 
     # Make new QLearn object
     print "Inicijaliziranje algoritma..."
@@ -252,9 +255,12 @@ if __name__ == '__main__':
             start = 0
     actions = alg.play(start)
 
+    # Visualize moves by printing in console
     print
     sequence = index2state(lookup, actions, alg.nStates)
     printGame(sequence)
 
+    # Get commands for the robot - USED FOR DEBUGGING
     print
-    print game2robot(sequence)
+    commands = game2robot(sequence)
+    print commands

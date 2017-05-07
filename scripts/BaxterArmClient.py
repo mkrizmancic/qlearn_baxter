@@ -4,8 +4,6 @@
 CREDIT: Lucija Kopic (Graduation Thesis)
 """
 
-#TODO Glavni docstring
-
 import time
 import sys
 import math
@@ -21,12 +19,12 @@ from baxter_moveit_config.msg import baxterAction, baxterGoal, baxterResult, bax
 import Errors
 from Util import *
 
-
 class BaxterArmClient():
     """
     This class unfortunately contains some "magic numbers".
     Replacing them with constants would make the code more difficult to read.
-    In order to understand what are they representing, please read 'Environment setup' section of README
+    In order to understand what are they representing, 
+    please read 'Environment setup' section of README
     """
     def __init__ (self):
         self.left_client = actionlib.SimpleActionClient("baxter_action_server_left", baxterAction)
@@ -103,7 +101,6 @@ class BaxterArmClient():
         
         self.left_client.send_goal_and_wait(goal_final)
         result = self.left_client.get_result()
-
         if result.status:
             return 1 
         else:
@@ -153,7 +150,6 @@ class BaxterArmClient():
                         return 1
         return Errors.RaisePickFailed() 
         
-        
     def place (self, place_destination, place_height):
         """
         Execute the place action.
@@ -188,38 +184,6 @@ class BaxterArmClient():
                             return 1
         return Errors.RaisePlaceFailed()
     
-    
-    def calibration_rod (self):
-        """Calibrate rod positions."""
-        # Go to 1st, 2nd and 3rd rod
-        self.go_to_position('pick', 0, 1, 0.1 + 0.15, 0, 0)
-        rospy.sleep(2)
-        self.go_to_position('pick', 1, 1, 0.1 + 0.15, 0, 0)
-        rospy.sleep(2)
-        self.go_to_position('pick', 2, 1, 0.1 + 0.15, 0, 0)
-        rospy.sleep(2)
-
-    def calibration_disk (self):
-        """Calibrate disk positions."""
-        # Go to disks 1, 2 and 3 on the first rod
-        self.go_to_position('pick', 0, 1, 0, 0, 0)
-        self.go_to_position('pick', 0, 1, 0.1, 0, 0)
-        rospy.sleep(10)
-        self.go_to_position('pick', 0, 1, 0.1, 0, 0.01)
-        self.go_to_position('pick', 0, 1, 0, 0, 0)
-
-        self.go_to_position('pick', 0, 2, 0, 0, 0)
-        self.go_to_position('pick', 0, 2, 0.1, 0, 0)
-        rospy.sleep(10)
-        self.go_to_position('pick', 0, 2, 0.1, 0, 0.01)
-        self.go_to_position('pick', 0, 2, 0, 0, 0)
-
-        self.go_to_position('pick', 0, 3, 0, 0, 0)
-        self.go_to_position('pick', 0, 3, 0.1, 0, 0)
-        rospy.sleep(10)
-        self.go_to_position('pick', 0, 3, 0.1, 0, 0.01)
-        self.go_to_position('pick', 0, 3, 0, 0, 0)
-
     def pick_and_place (self, pick_destination, pick_height, place_destination, place_height):
         """
         Execute 'pick and place' action.
@@ -244,10 +208,41 @@ class BaxterArmClient():
                 return Errors.RaisePickAndPlaceFailed()
             else: 
                 return 1
-        
+
+    def calibration_rod (self):
+        """Calibrate rod positions."""
+        # Go to 1st, 2nd and 3rd rod
+        self.go_to_position('pick', 0, 1, 0.1 + 0.15, 0, 0)
+        rospy.sleep(2)
+        self.go_to_position('pick', 1, 1, 0.1 + 0.15, 0, 0)
+        rospy.sleep(2)
+        self.go_to_position('pick', 2, 1, 0.1 + 0.15, 0, 0)
+        rospy.sleep(2)
+
+    def calibration_disk (self):
+        """Calibrate disk positions."""
+        # Go to disks 1, 2 and 3 on the first rod
+        self.go_to_position('pick', 0, 1, 0, 0, 0)
+        self.go_to_position('pick', 0, 1, 0.1, 0, 0)
+        rospy.sleep(10)
+        self.go_to_position('pick', 0, 1, 0.1, 0, 0.01)
+        self.go_to_position('pick', 0, 1, 0, 0, 0)
+        # Go to disks 1, 2 and 3 on the second rod
+        self.go_to_position('pick', 0, 2, 0, 0, 0)
+        self.go_to_position('pick', 0, 2, 0.1, 0, 0)
+        rospy.sleep(10)
+        self.go_to_position('pick', 0, 2, 0.1, 0, 0.01)
+        self.go_to_position('pick', 0, 2, 0, 0, 0)
+        # Go to disks 1, 2 and 3 on the third rod
+        self.go_to_position('pick', 0, 3, 0, 0, 0)
+        self.go_to_position('pick', 0, 3, 0.1, 0, 0)
+        rospy.sleep(10)
+        self.go_to_position('pick', 0, 3, 0.1, 0, 0.01)
+        self.go_to_position('pick', 0, 3, 0, 0, 0)
 
     def start (self, pick_destination, pick_height, place_destination, place_height):        
-        thread = Thread(target = self.pick_and_place, args=(pick_destination, pick_height, place_destination, place_height))
+        thread = Thread(target = self.pick_and_place, 
+                        args=(pick_destination, pick_height, place_destination, place_height))
         thread.start()
         thread.join()
 
@@ -262,7 +257,7 @@ class BaxterArmClient():
         thread.join()
 
 if __name__ == '__main__':
-    rospy.init_node('baxter_client',anonymous=True, disable_signals = True)
+    rospy.init_node('Baxter_Client', disable_signals = True)
     try:
         client = BaxterArmClient()
         client.start()  
