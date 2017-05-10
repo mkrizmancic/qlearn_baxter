@@ -260,6 +260,6 @@ if __name__ == '__main__':
     rospy.init_node('Baxter_Client', disable_signals = True)
     try:
         client = BaxterArmClient()
-        client.start()  
+        client.start()
     except rospy.ROSInterruptException:
         rospy.loginfo('Terminating baxter_client.')

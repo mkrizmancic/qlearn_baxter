@@ -55,8 +55,10 @@ class QLearn:
         Args: none
         """
         goal = self.nStates - 1 # Goal state index
+        episodes = 3 * self.nStates
         for i in range (self.nStates):    # Repeat learning proccess
-            sys.stdout.write ("  {:.0f}% \r".format(i*100.0/self.nStates))
+            sys.stdout.write ("  {:.0f}% \r".format(i*100.0/episodes))
+            sys.stdout.flush()
             current = randint(0, goal)      # Select random starting state
             while (current != goal):
                 temp = []
@@ -258,7 +260,7 @@ if __name__ == '__main__':
     # Visualize moves by printing in console
     print
     sequence = index2state(lookup, actions, alg.nStates)
-    printGame(sequence)
+    printGame(sequence, n)
 
     # Get commands for the robot - USED FOR DEBUGGING
     print

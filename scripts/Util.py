@@ -39,21 +39,22 @@ def index2state (lookup, actions, nStates):
     
     return sequence
 
-def printGame (sequence):
+def printGame (sequence, height):
     """
     Visualize moves from start to goal state.
 
     Args:
         sequence (list): List containing tuples representing states
+        height (int): Height of the rod, equal to the number of disks
     """
     move = 0
     for state in sequence:
         print move, ". potez:"
         lista = list(state)
         for i in range (3):
-            for j in range(5-len(state[i])):
+            for j in range(height-len(state[i])):
                 lista[i] = ('|',) + lista[i]
-        for i in range (5):
+        for i in range (height):
             print ("     {0}       {1}       {2}".format(lista[0][i], lista[1][i], lista[2][i]))
         print ("============================")
         print ("============================")

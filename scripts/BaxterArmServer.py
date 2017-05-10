@@ -12,7 +12,7 @@ from baxter_moveit_config.msg import baxterAction, baxterGoal, baxterResult, bax
 from baxter_interface import Gripper, Limb
 from threading import Thread
 from tf.transformations import quaternion_from_euler
-from Utils import Utils
+from Util import *
 
 VALID_LIMB_JOINTS = 1
 INVALID_LIMB_JOINTS = 0
@@ -116,7 +116,7 @@ class BaxterArm:
         self.robot= moveit_commander.RobotCommander()
 
 if __name__ == '__main__':
-    rospy.init_node('BaxterArm')
+    rospy.init_node('Baxter_Server')
     try:
         baxter_server = BaxterArm('left')
         baxter_server.start()
