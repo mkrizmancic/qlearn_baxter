@@ -4,8 +4,6 @@
 CREDIT: Lucija Kopic (Graduation Thesis)
 """
 
-import time
-import sys
 import math
 from threading import Thread
 
@@ -19,8 +17,9 @@ from baxter_moveit_config.msg import baxterAction, baxterGoal, baxterResult, bax
 import Errors
 from Util import *
 
+# Comments beginning with "noinspection" are PyCharm auto-generated comments
+# noinspection PyMethodMayBeStatic,PyUnusedLocal,PyNoneFunctionAssignment,PyRedundantParentheses,PyTypeChecker
 
-# noinspection PyMethodMayBeStatic,PyUnusedLocal,PyNoneFunctionAssignment,PyRedundantParentheses
 class BaxterArmClient:
     """
     This class unfortunately contains some "magic numbers".

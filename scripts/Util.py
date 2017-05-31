@@ -8,7 +8,10 @@ Functions:
     printGame: Visualizes moves from start to goal state.
     game2robot: Converts moves to format readable to robot-moving function.
 """
+
 import sys
+
+# Comments beginning with "noinspection" are PyCharm auto-generated comments
 
 thickness = 0.06
 
@@ -21,7 +24,9 @@ BOLD = "\033[;1m"
 REVERSE = "\033[;7m"
 
 
+# noinspection PyUnboundLocalVariable
 def user_print(text, style, new_line=True):
+    """Print text with given style (color)"""
     if style == 'error':
         color = RED
     elif style == 'info':
@@ -39,6 +44,7 @@ def user_print(text, style, new_line=True):
 
 
 def user_input(text):
+    """Get user input with colored prompt"""
     color = GREEN
     sys.stdout.write(color)
     print text, " >> ",
@@ -56,6 +62,7 @@ def get_place_height(disk):
     return disk * thickness + 0.05 - 0.04 - 0.025 + 0.007
 
 
+# noinspection PyUnusedLocal
 def index2state(lookup, actions, nStates):
     """
     Converts state indexes back to tuples.

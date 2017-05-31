@@ -7,7 +7,9 @@ from random import randint
 from Util import *
 
 
-# noinspection PyUnboundLocalVariable,PyShadowingNames  # PyCharm auto-generated comment
+# Comments beginning with "noinspection" are PyCharm auto-generated comments
+# noinspection PyUnboundLocalVariable,PyShadowingNames
+
 class QLearn:
     """
     This class is an implementation of a Q-Learning algorithm for solving Tower of Hanoi problem.

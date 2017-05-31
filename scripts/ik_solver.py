@@ -6,16 +6,16 @@ Functions:
 
 CREDIT: Miram Bilac (Graduation Thesis)
 """
-import argparse
-import sys
 
 import rospy
-from geometry_msgs.msg import PoseStamped, Pose, Point, Quaternion
-from std_msgs.msg import Header
 from baxter_core_msgs.srv import SolvePositionIK, SolvePositionIKRequest
+from geometry_msgs.msg import PoseStamped, Pose
+from std_msgs.msg import Header
 
 import Errors
 
+
+# Comments beginning with "noinspection" are PyCharm auto-generated comments
 
 def ik_solve(limb, pos, orient):
     # rospy.init_node("rsdk_ik_service_client")

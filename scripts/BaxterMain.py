@@ -6,6 +6,7 @@ from QLearning import QLearn
 from BaxterArmClient import BaxterArmClient
 from Util import *
 
+# Comments beginning with "noinspection" are PyCharm auto-generated comments
 
 class BaxterMain:
     def __init__(self):
@@ -55,7 +56,7 @@ class BaxterMain:
         user_print("Unesite pocetno stanje >> ", 'input', False)
         start = input()
         lookup = alg.lookup.copy()  # Get local copy of lookup dictionary
-        if type(start) is tuple:  # Allows users to inpute state both as tuple and index
+        if type(start) is tuple:  # Allows users to input state both as tuple and index
             if start in lookup:
                 start = lookup[start]
             else:
