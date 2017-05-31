@@ -6,6 +6,7 @@ from QLearning import QLearn
 from BaxterArmClient import BaxterArmClient
 from Util import *
 
+
 class BaxterMain:
     def __init__(self):
         # Create class instances
@@ -15,13 +16,13 @@ class BaxterMain:
         query = user_input("Zelite li provesti kalibraciju? d/n")
         if query == 'd':
             self.calibration()
-        
+
         query = user_input("Test? d/n")
         if query == 'd':
             self.client.test()
         self.startProcedure()
 
-    def calibration (self):
+    def calibration(self):
         query = user_input("Kalibracija kolutova? d/n")
         if query == 'd':
             self.client.kalibracija_kolutovi()
@@ -38,7 +39,7 @@ class BaxterMain:
             user_print("Neispravan unos. Vrijednost mora biti u intervalu <0, 1]", 'warn')
             gama = float(user_input("Unesite discount faktor:") or 0.95)
 
-    # Make new QLearn object
+            # Make new QLearn object
         user_print("Inicijaliziranje algoritma...", 'info')
         alg = QLearn(n, gama)
         user_print("GOTOVO", 'info')
@@ -54,7 +55,7 @@ class BaxterMain:
         user_print("Unesite pocetno stanje >> ", 'input', False)
         start = input()
         lookup = alg.lookup.copy()  # Get local copy of lookup dictionary
-        if type(start) is tuple:    # Allows users to inpute state both as tuple and index
+        if type(start) is tuple:  # Allows users to inpute state both as tuple and index
             if start in lookup:
                 start = lookup[start]
             else:
@@ -75,6 +76,7 @@ class BaxterMain:
         # Start the robot and send commands step-by-step
         for step in commands:
             self.client.start(step[0], step[1], step[2], step[3])
+
 
 if __name__ == '__main__':
     time.sleep(35)

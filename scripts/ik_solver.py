@@ -18,17 +18,17 @@ import Errors
 
 
 def ik_solve(limb, pos, orient):
-    #rospy.init_node("rsdk_ik_service_client")
+    # rospy.init_node("rsdk_ik_service_client")
     ns = "ExternalTools/" + limb + "/PositionKinematicsNode/IKService"
     iksvc = rospy.ServiceProxy(ns, SolvePositionIK)
     ikreq = SolvePositionIKRequest()
-    #print "iksvc: ", iksvc
-    #print "ikreq: ", ikreq
+    # print "iksvc: ", iksvc
+    # print "ikreq: ", ikreq
     hdr = Header(stamp=rospy.Time.now(), frame_id='base')
     poses = {
         str(limb): PoseStamped(header=hdr,
-            pose=Pose(position=pos, orientation=orient))}
-            
+                               pose=Pose(position=pos, orientation=orient))}
+
     ikreq.pose_stamp.append(poses[limb])
     try:
         rospy.wait_for_service(ns, 5.0)
@@ -37,11 +37,11 @@ def ik_solve(limb, pos, orient):
         rospy.logerr("Service call failed: %s" % (e,))
         return 1
 
-    if (resp.isValid[0]):
-        #print("SUCCESS - Valid Joint Solution Found:")
+    if resp.isValid[0]:
+        # print("SUCCESS - Valid Joint Solution Found:")
         # Format solution into Limb API-compatible dictionary
         limb_joints = dict(zip(resp.joints[0].name, resp.joints[0].position))
-        #print limb_joints
+        # print limb_joints
         return limb_joints
     else:
         return Errors.RaiseNotReachable()

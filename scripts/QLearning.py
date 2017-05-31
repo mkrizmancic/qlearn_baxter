@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import sys
 from math import pow
 from random import randint
 
-from BaxterArmClient import BaxterArmClient
 from Util import *
 
+
+# noinspection PyUnboundLocalVariable,PyShadowingNames  # PyCharm auto-generated comment
 class QLearn:
     """
     This class is an implementation of a Q-Learning algorithm for solving Tower of Hanoi problem.
@@ -26,7 +26,8 @@ class QLearn:
         lookup (dict): Stores relation between states and matrix indexes
     """
 
-    def __init__ (self, numberOfDisks, discountFactor):
+    # noinspection PyUnusedLocal
+    def __init__(self, numberOfDisks, discountFactor):
         """
         Initialize Q and R matrices, set local helper variables and start state generation.
 
@@ -39,14 +40,14 @@ class QLearn:
 
         # Variables related to Q-Learning algorithm
         self.gama = discountFactor
-        self.Q = [[ 0 for i in range(self.nStates)] for j in range(self.nStates)]
-        self.R = [[ -1 for i in range(self.nStates)] for j in range(self.nStates)]
+        self.Q = [[0 for i in range(self.nStates)] for j in range(self.nStates)]
+        self.R = [[-1 for i in range(self.nStates)] for j in range(self.nStates)]
         self.lookup = {}
 
         # Start state generation
         StateGenerator(self.R, self.nStates, numberOfDisks, self.lookup)
 
-    def learn (self):
+    def learn(self):
         """
         Train Q matrix (learning proccess). Find out more by studying Q-Learning.
 
@@ -54,25 +55,25 @@ class QLearn:
 
         Args: none
         """
-        goal = self.nStates - 1 # Goal state index
+        goal = self.nStates - 1  # Goal state index
         episodes = 3 * self.nStates
-        for i in range (self.nStates):    # Repeat learning proccess
-            sys.stdout.write ("  {:.0f}% \r".format(i*100.0/episodes))
+        for i in range(self.nStates):  # Repeat learning proccess
+            sys.stdout.write("  {:.0f}% \r".format(i * 100.0 / episodes))
             sys.stdout.flush()
-            current = randint(0, goal)      # Select random starting state
-            while (current != goal):
+            current = randint(0, goal)  # Select random starting state
+            while current != goal:
                 temp = []
-                for possible in range(self.nStates):    # Find possible next states
+                for possible in range(self.nStates):  # Find possible next states
                     if self.R[current][possible] != -1:
                         temp.append(possible)
-                next = temp[randint(0, len(temp)-1)]    # Select one of the possible states at random
-                maxQ = max(self.Q[next])    # Find maximum Q value for next state
-                
+                next = temp[randint(0, len(temp) - 1)]  # Select one of the possible states at random
+                maxQ = max(self.Q[next])  # Find maximum Q value for next state
+
                 self.Q[current][next] = self.R[current][next] + self.gama * maxQ  # Update the Q matrix
                 current = next  # Start from the new state in next iteration
         return
 
-    def play (self, start):
+    def play(self, start):
         """
         Utilize gained knowledge to solve the problem.
 
@@ -87,16 +88,18 @@ class QLearn:
         goal = self.nStates - 1
         current = start
         actions = [start]
-        while (current != goal):
-            max = 0 # Maximum value in a row of a Q matrix
-            for i in range (self.nStates):
-                if self.Q[current][i] > max:
-                    max = self.Q[current][i]
+        while current != goal:
+            maximum = 0  # Maximum value in a row of a Q matrix
+            for i in range(self.nStates):
+                if self.Q[current][i] > maximum:
+                    maximum = self.Q[current][i]
                     maxState = i
             current = maxState
             actions.append(current)
         return actions
 
+
+# noinspection PyPep8Naming,PyUnusedLocal,PyMethodMayBeStatic,PyUnboundLocalVariable,PyTypeChecker
 class StateGenerator:
     """
     Class for generating states for Tower of Hanoi problem and filling out R matrix.
@@ -110,7 +113,8 @@ class StateGenerator:
         finalState (tuple): Goal state
     """
 
-    def __init__ (self, R, nStates, numberOfDisks, lookup):
+    # noinspection PyShadowingNames
+    def __init__(self, R, nStates, numberOfDisks, lookup):
         """
         Create helper variables: list of generated states, dictionary and start and end positions.
         Start generation proccess.
@@ -124,17 +128,17 @@ class StateGenerator:
         self.R = R
 
         # Helper variables
-        self.visited = [[ 0 for i in range(nStates)] for j in range(nStates)]
+        self.visited = [[0 for i in range(nStates)] for j in range(nStates)]
         generated = []
         self.lookup = lookup
         self.freeIndex = 1  # Next available index for storing storing states in dictionary
-        ordered = tuple()   # Tuple containing disks in correct starting and final order
+        ordered = tuple()  # Tuple containing disks in correct starting and final order
         for i in range(numberOfDisks):
-            ordered += (i+1,)
-        
+            ordered += (i + 1,)
+
         # Set initial values
-        self.startState = ( ordered, (), () )
-        self.finalState = ( (), (), ordered )
+        self.startState = (ordered, (), ())
+        self.finalState = ((), (), ordered)
         self.lookup[self.startState] = 0
         self.lookup[self.finalState] = nStates - 1
 
@@ -149,21 +153,21 @@ class StateGenerator:
             generated.append(fromState)
             fromIndex = self.lookup[fromState]
 
-            for i in range (3):     # For each rod...
-                if len(fromState[i]):   # ... if it is not empty...
-                    moveDisk = (fromState[i][0],)   # ... remove the top disk
+            for i in range(3):  # For each rod...
+                if len(fromState[i]):  # ... if it is not empty...
+                    moveDisk = (fromState[i][0],)  # ... remove the top disk
 
-                    nextState = self.getNextState(fromState, moveDisk, 2*i)   # Place disk on another rod
-                    nextIndex = self.updateRMatrix(nextState, fromIndex)   
-                    if nextIndex:   # If this was unvisited state, generate another
+                    nextState = self.getNextState(fromState, moveDisk, 2 * i)  # Place disk on another rod
+                    nextIndex = self.updateRMatrix(nextState, fromIndex)
+                    if nextIndex:  # If this was unvisited state, generate another
                         toGenerate.append(nextState)
-                     
-                    nextState = self.getNextState(fromState, moveDisk, 2*i+1)
+
+                    nextState = self.getNextState(fromState, moveDisk, 2 * i + 1)
                     nextIndex = self.updateRMatrix(nextState, fromIndex)
                     if nextIndex:
                         toGenerate.append(nextState)
 
-    def getNextState (self, state, moveDisk, ord):
+    def getNextState(self, state, moveDisk, step):
         """
         Create new states from origin state.
 
@@ -173,20 +177,26 @@ class StateGenerator:
         Args:
             state (tuple): Current state
             moveDisk (int): Number representing size of the disk to be moved
-            ord (int): Which of the possible moves should be simulated
+            step (int): Which of the possible moves should be simulated
 
         Returns:
             nextState (tuple): Generated state
         """
-        if ord == 0: nextState = ( state[0][1:], moveDisk + state[1], state[2] )
-        elif ord == 1: nextState = ( state[0][1:], state[1], moveDisk + state[2] )
-        elif ord == 2: nextState = ( moveDisk + state[0], state[1][1:], state[2] )
-        elif ord == 3: nextState = ( state[0], state[1][1:], moveDisk + state[2] )
-        elif ord == 4: nextState = ( moveDisk + state[0], state[1], state[2][1:] )
-        elif ord == 5: nextState = ( state[0], moveDisk + state[1], state[2][1:] )
+        if step == 0:
+            nextState = (state[0][1:], moveDisk + state[1], state[2])
+        elif step == 1:
+            nextState = (state[0][1:], state[1], moveDisk + state[2])
+        elif step == 2:
+            nextState = (moveDisk + state[0], state[1][1:], state[2])
+        elif step == 3:
+            nextState = (state[0], state[1][1:], moveDisk + state[2])
+        elif step == 4:
+            nextState = (moveDisk + state[0], state[1], state[2][1:])
+        elif step == 5:
+            nextState = (state[0], moveDisk + state[1], state[2][1:])
         return nextState
 
-    def updateRMatrix (self, nextState, fromIndex):
+    def updateRMatrix(self, nextState, fromIndex):
         """
         Update R matrix for given transition from state to state.
 
@@ -199,29 +209,29 @@ class StateGenerator:
             0 (False) otherwise
         """
         if self.isValid(nextState):
-            if nextState not in self.lookup:    # If this state doesn't yet have an index in dictionary...
-                self.lookup[nextState] = self.freeIndex # ... create a new one
+            if nextState not in self.lookup:  # If this state doesn't yet have an index in dictionary...
+                self.lookup[nextState] = self.freeIndex  # ... create a new one
                 nextIndex = self.freeIndex
-                self.freeIndex += 1 # Update the next available (not used) index
+                self.freeIndex += 1  # Update the next available (not used) index
             else:
                 nextIndex = self.lookup.get(nextState)
 
-            if self.visited[fromIndex][nextIndex] == 0: # If transition has not yet been evaluated...
-                if nextState == self.finalState:    # ... if it is a final state, add big reward
+            if self.visited[fromIndex][nextIndex] == 0:  # If transition has not yet been evaluated...
+                if nextState == self.finalState:  # ... if it is a final state, add big reward
                     self.R[fromIndex][nextIndex] = 100
                 else:
-                    self.R[fromIndex][nextIndex] = 0 # ... if it is a valid transition
+                    self.R[fromIndex][nextIndex] = 0  # ... if it is a valid transition
                 self.visited[fromIndex][nextIndex] = 1
                 return nextIndex
         return 0
 
-    def isValid (self, state):
+    def isValid(self, state):
         """Chek validity of the state. Larger disk must not be on top of the smaller."""
         for i in range(3):
             if len(state[i]):
-                min = state[i][0]
+                minimum = state[i][0]
             for disk in state[i]:
-                if disk < min:
+                if disk < minimum:
                     return False
         return True
 
@@ -250,7 +260,7 @@ if __name__ == '__main__':
     user_print("Unesite pocetno stanje >> ", 'input', False)
     start = input()
     lookup = alg.lookup.copy()  # Get local copy of lookup dictionary
-    if type(start) is tuple:    # Allows users to inpute state both as tuple and index
+    if type(start) is tuple:  # Allows users to inpute state both as tuple and index
         if start in lookup:
             start = lookup[start]
         else:

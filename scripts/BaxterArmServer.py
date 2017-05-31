@@ -17,6 +17,8 @@ from Util import *
 VALID_LIMB_JOINTS = 1
 INVALID_LIMB_JOINTS = 0
 
+
+# noinspection PyMethodMayBeStatic,PyAttributeOutsideInit,PyUnusedLocal
 class BaxterArm:
     def __init__(self, arm):
         self.as_goal = {'left': baxterGoal(), 'right': baxterGoal()}
@@ -43,7 +45,7 @@ class BaxterArm:
         point_target.orientation.z = arm.endpoint_pose()['orientation'].z
         point_target.orientation.w = arm.endpoint_pose()['orientation'].w
     
-    def set_goal(self, point_target,arm):
+    def set_goal(self, point_target, arm):
         point_target.position.x = self.as_goal[arm].pose.position.x
         point_target.position.y = self.as_goal[arm].pose.position.y
         point_target.position.z = self.as_goal[arm].pose.position.z
@@ -74,11 +76,11 @@ class BaxterArm:
         display_trajectory_publisher = rospy.Publisher(
                                     '/move_group/display_planned_path',
                                     moveit_msgs.msg.DisplayTrajectory,
-                                    queue_size = 1)
+                                    queue_size=1)
 
         if goal.id == 1: 
             user_print("ODLAZAK NA ZADANU POZICIJU", 'info')
-            self.set_goal(pose_target,arm)
+            self.set_goal(pose_target, arm)
             limb_joints = ik_solver.ik_solve(arm, Point(pose_target.position.x+0.07, pose_target.position.y, pose_target.position.z+0.05), pose_target.orientation)
 
             if limb_joints != 0: 
@@ -103,18 +105,18 @@ class BaxterArm:
             chosen_gripper.close()
             self.as_res[arm].status = VALID_LIMB_JOINTS
             self.as_res[arm].id = self.as_goal[arm].id
-            chosen_server.set_succeeded(result = self.as_res[arm])
+            chosen_server.set_succeeded(result=self.as_res[arm])
             
-    def execute_right(self,goal):   
-        self.execute(goal,'right')
+    def execute_right(self, goal):
+        self.execute(goal, 'right')
 
-    def execute_left(self,goal):
-        self.execute(goal,'left')
+    def execute_left(self, goal):
+        self.execute(goal, 'left')
 
     def start(self):
         self.action_server_left.start()
         moveit_commander.roscpp_initialize(sys.argv)
-        self.robot= moveit_commander.RobotCommander()
+        self.robot = moveit_commander.RobotCommander()
 
 if __name__ == '__main__':
     rospy.init_node('Baxter_Server')
@@ -123,6 +125,3 @@ if __name__ == '__main__':
         baxter_server.start()
     except rospy.ROSInterruptException:
         rospy.loginfo('Terminating baxter_action_server.')
-
-        
-        

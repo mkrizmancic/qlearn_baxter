@@ -19,25 +19,28 @@ from baxter_moveit_config.msg import baxterAction, baxterGoal, baxterResult, bax
 import Errors
 from Util import *
 
-class BaxterArmClient():
+
+# noinspection PyMethodMayBeStatic,PyUnusedLocal,PyNoneFunctionAssignment,PyRedundantParentheses
+class BaxterArmClient:
     """
     This class unfortunately contains some "magic numbers".
     Replacing them with constants would make the code more difficult to read.
     In order to understand what are they representing, 
     please read 'Environment setup' section of README
     """
-    def __init__ (self):
+
+    def __init__(self):
         self.left_client = actionlib.SimpleActionClient("baxter_action_server_left", baxterAction)
         self.left_client.wait_for_server(rospy.Duration(10.0))
         self.listener = tf.TransformListener()
 
-    def transformations (self):
+    def transformations(self):
         """Transform rods' coordinate system to the Baxter's coordinate system."""
         self.listener.waitForTransform("/base", "/stup", rospy.Time(0), rospy.Duration(8.0))
         (trans, rot) = self.listener.lookupTransform('/base', '/stup', rospy.Time(0))
         return trans
 
-    def position (self, target_position, trans, height):
+    def position(self, target_position, trans, height):
         """
         Set the position of the robot's arm.
 
@@ -62,7 +65,7 @@ class BaxterArmClient():
         target_position.position.z = trans[2] + height - 0.015
         return target_position
 
-    def go_to_position (self, task, destination, height, offset_x, offset_y, offset_z):
+    def go_to_position(self, task, destination, height, offset_x, offset_y, offset_z):
         """
         Calculate goal position, send that to the robot and wait for response.
 
@@ -70,14 +73,16 @@ class BaxterArmClient():
             task (string): Pick or place action
             destination (int): Destination rod [0, 1, 2]
             height (float): Height of the goal position (based on number of disk on the rod)
-            offset_x, offset_y, offset_z
+            offset_x
+            offset_y
+            offset_z
         """
-        #TODO trebaju li mi ti offesti u pozivu ili ih mogu nekako drugacije
+        # TODO trebaju li mi ti offesti u pozivu ili ih mogu nekako drugacije
         goal = Pose()
         trans = self.transformations()
         if task == 'pick':
             height = get_pick_height(height)
-        else: 
+        else:
             height = get_place_height(height)
         goal = self.position(goal, trans, height)
 
@@ -91,22 +96,22 @@ class BaxterArmClient():
         offset_z -= 0.02
         offset_y -= 0.05
         if destination == 0: offset_z -= 0.005
-        if destination == 1: offset_z -= 0.005      
+        if destination == 1: offset_z -= 0.005
 
         # Update goal with calculated offsets
         goal.position.x += offset_x
-        goal.position.y += offset_y 
+        goal.position.y += offset_y
         goal.position.z += offset_z
-        goal_final = baxterGoal(id = 1, pose = goal)
-        
+        goal_final = baxterGoal(id=1, pose=goal)
+
         self.left_client.send_goal_and_wait(goal_final)
         result = self.left_client.get_result()
         if result.status:
-            return 1 
+            return 1
         else:
             return Errors.RaiseGoToFailed(task, destination, height, offset_x, offset_y, offset_z)
-    
-    def test (self):
+
+    def test(self):
         goal = Pose()
         roll = -math.pi / 2
         pitch = 0
@@ -116,18 +121,18 @@ class BaxterArmClient():
         goal.orientation.y = quaternion[1]
         goal.orientation.z = quaternion[2]
         goal.orientation.w = quaternion[3]
-        while (True):
+        while True:
             end = user_input("Zelite li nastaviti? d/n")
             if end != 'd':
                 break
             goal.position.x = float(user_input("X?"))
             goal.position.y = float(user_input("Y?"))
             goal.position.z = float(user_input("Z?"))
-            goal_final = baxterGoal(id = 1, pose = goal)
+            goal_final = baxterGoal(id=1, pose=goal)
             self.left_client.send_goal_and_wait(goal_final)
             result = self.left_client.get_result()
 
-    def test2 (self):
+    def test2(self):
         goal = Pose()
         roll = -math.pi / 2
         pitch = 0
@@ -137,39 +142,39 @@ class BaxterArmClient():
         goal.orientation.y = quaternion[1]
         goal.orientation.z = quaternion[2]
         goal.orientation.w = quaternion[3]
-        while (True):
+        while True:
             end = user_input("Zelite li nastaviti? d/n")
             if end != 'd':
                 break
             trans = self.transformations()
             goal.position.x = trans[0]
             goal.position.y = trans[1]
-            goal.position.z = trans[2]         
+            goal.position.z = trans[2]
             offset_x = float(user_input("X?"))
             offset_y = float(user_input("Y?"))
             offset_z = float(user_input("Z?"))
             goal.position.x += offset_x
             goal.position.y += offset_y
             goal.position.z += offset_z
-            goal_final = baxterGoal(id = 1, pose = goal)
+            goal_final = baxterGoal(id=1, pose=goal)
             self.left_client.send_goal_and_wait(goal_final)
             result = self.left_client.get_result()
 
-    def close_gripper (self):
+    def close_gripper(self):
         """Send the instruction to the robot to close the gripper."""
         goal = Pose()
-        goal_final = baxterGoal(id=3, pose = goal)
+        goal_final = baxterGoal(id=3, pose=goal)
         status = self.left_client.send_goal_and_wait(goal_final)
         result = self.left_client.wait_for_result()
-    
-    def open_gripper (self):
+
+    def open_gripper(self):
         """Send the instruction to the robot to open the gripper."""
         goal = Pose()
-        goal_final = baxterGoal(id=2, pose = goal)
+        goal_final = baxterGoal(id=2, pose=goal)
         self.left_client.send_goal(goal_final)
-        self.left_client.wait_for_result()  
-        
-    def pick (self, pick_destination, pick_height):
+        self.left_client.wait_for_result()
+
+    def pick(self, pick_destination, pick_height):
         """
         Execute the pick action.
         
@@ -182,24 +187,24 @@ class BaxterArmClient():
         starting_height = get_pick_height(pick_height)
         # Go in front of the selected rod with the neccessary height
         pick1 = self.go_to_position('pick', pick_destination, pick_height, 0, 0, 0)
-        if pick1: 
+        if pick1:
             user_print("PICK 1 ok", 'info')
             # Move towards the rod
-            pick2 = self.go_to_position('pick', pick_destination, pick_height, 0.1, 0, 0) 
-            if pick2: 
+            pick2 = self.go_to_position('pick', pick_destination, pick_height, 0.1, 0, 0)
+            if pick2:
                 user_print("PICK 2 ok", 'info')
                 # Close the gripper
                 pick3 = self.close_gripper()
                 if pick3:
-                    user_print("PICK 3 ok", 'info') 
+                    user_print("PICK 3 ok", 'info')
                     # Lift vertically above the rod
                     pick4 = self.go_to_position('pick', pick_destination, pick_height, 0.1, 0, 0.28 - starting_height)
                     if pick4:
-                        user_print("PICK 4 ok", 'info') 
+                        user_print("PICK 4 ok", 'info')
                         return 1
-        return Errors.RaisePickFailed() 
-        
-    def place (self, place_destination, place_height):
+        return Errors.RaisePickFailed()
+
+    def place(self, place_destination, place_height):
         """
         Execute the place action.
         
@@ -216,24 +221,24 @@ class BaxterArmClient():
             user_print("PLACE 1 OK", 'info')
             # Lower vertically to the neccessary height
             place2 = self.go_to_position('place', place_destination, place_height, 0.1, 0, 0)
-            if place2: 
+            if place2:
                 user_print("PLACE 2 OK", 'info')
                 # Open the gripper
                 place3 = self.open_gripper()
-                if place3: 
+                if place3:
                     user_print("PLACE 3 OK", 'info')
                     # Lower the arm slightly more to avoid hitting the diske
-                    place4 = self.go_to_position('place', place_destination, place_height, 0.1, 0, -0.015) 
-                    if place4: 
+                    place4 = self.go_to_position('place', place_destination, place_height, 0.1, 0, -0.015)
+                    if place4:
                         user_print("PLACE 4 OK", 'info')
                         # Move away from the rod
                         place5 = self.go_to_position('place', place_destination, place_height, 0, 0, -0.015)
-                        if place5: 
+                        if place5:
                             user_print("PLACE 5 OK", 'info')
                             return 1
         return Errors.RaisePlaceFailed()
-    
-    def pick_and_place (self, pick_destination, pick_height, place_destination, place_height):
+
+    def pick_and_place(self, pick_destination, pick_height, place_destination, place_height):
         """
         Execute 'pick and place' action.
 
@@ -249,18 +254,18 @@ class BaxterArmClient():
         user_print("------PICK---------------", 'info')
         print pick_destination, pick_height
         pick = self.pick(pick_destination, pick_height)
-        if pick == 0: 
+        if pick == 0:
             return Errors.RaisePickAndPlaceFailed()
         else:
             user_print("------PLACE--------------", 'info')
             print place_destination, place_height
-            place = self.place(place_destination, place_height,)
-            if place == 0: 
+            place = self.place(place_destination, place_height, )
+            if place == 0:
                 return Errors.RaisePickAndPlaceFailed()
-            else: 
+            else:
                 return 1
 
-    def calibration_rod (self):
+    def calibration_rod(self):
         """Calibrate rod positions."""
         # Go to 1st, 2nd and 3rd rod
         self.go_to_position('pick', 0, 1, 0.1 + 0.15, 0, 0)
@@ -270,7 +275,7 @@ class BaxterArmClient():
         self.go_to_position('pick', 2, 1, 0.1 + 0.15, 0, 0)
         rospy.sleep(2)
 
-    def calibration_disk (self):
+    def calibration_disk(self):
         """Calibrate disk positions."""
         # Go to disks 1, 2 and 3 on the first rod
         self.go_to_position('pick', 0, 1, 0, 0, 0)
@@ -291,24 +296,25 @@ class BaxterArmClient():
         self.go_to_position('pick', 0, 3, 0.1, 0, 0.01)
         self.go_to_position('pick', 0, 3, 0, 0, 0)
 
-    def start (self, pick_destination, pick_height, place_destination, place_height):        
-        thread = Thread(target = self.pick_and_place, 
+    def start(self, pick_destination, pick_height, place_destination, place_height):
+        thread = Thread(target=self.pick_and_place,
                         args=(pick_destination, pick_height, place_destination, place_height))
         thread.start()
         thread.join()
 
-    def kalibracija_kolutovi (self):
-        thread = Thread(target = self.calibration_disk, args=(1))
+    def kalibracija_kolutovi(self):
+        thread = Thread(target=self.calibration_disk, args=(1))
         thread.start()
         thread.join()
 
-    def kalibracija_stupovi (self):
-        thread = Thread(target = self.calibration_rod, args=(1))
+    def kalibracija_stupovi(self):
+        thread = Thread(target=self.calibration_rod, args=(1))
         thread.start()
         thread.join()
+
 
 if __name__ == '__main__':
-    rospy.init_node('Baxter_Client', disable_signals = True)
+    rospy.init_node('Baxter_Client', disable_signals=True)
     try:
         client = BaxterArmClient()
         client.start()
