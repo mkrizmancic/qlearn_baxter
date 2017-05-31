@@ -10,6 +10,7 @@ Functions:
 """
 
 import sys
+import random
 
 # Comments beginning with "noinspection" are PyCharm auto-generated comments
 
@@ -130,3 +131,7 @@ def game2robot(sequence):
         commands.append((pick_destination, pick_height, place_destination, place_height))
 
     return commands
+
+def flipCoin( p ):
+    r = random.random()
+    return r < p

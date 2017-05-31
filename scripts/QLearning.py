@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from math import pow
-from random import randint
+from random import randint, random
 
 from Util import *
 
@@ -29,7 +29,7 @@ class QLearn:
     """
 
     # noinspection PyUnusedLocal
-    def __init__(self, numberOfDisks, discountFactor):
+    def __init__(self, numberOfDisks, discountFactor, learningRate, explorationProb):
         """
         Initialize Q and R matrices, set local helper variables and start state generation.
 
@@ -42,6 +42,8 @@ class QLearn:
 
         # Variables related to Q-Learning algorithm
         self.gama = discountFactor
+        self.alpha = learningRate
+        self.epsilon = explorationProb
         self.Q = [[0 for i in range(self.nStates)] for j in range(self.nStates)]
         self.R = [[-1 for i in range(self.nStates)] for j in range(self.nStates)]
         self.lookup = {}
@@ -51,29 +53,64 @@ class QLearn:
 
     def learn(self):
         """
-        Train Q matrix (learning proccess). Find out more by studying Q-Learning.
+        Train Q matrix (learning process). Find out more by studying Q-Learning.
 
         'goal', 'current' and 'next' are indexes of goal, current and next states respectively.
 
         Args: none
         """
         goal = self.nStates - 1  # Goal state index
-        episodes = 3 * self.nStates
-        for i in range(self.nStates):  # Repeat learning proccess
+        episodes = 10 * self.nStates
+        for i in range(self.nStates):  # Repeat learning process
             sys.stdout.write("  {:.0f}% \r".format(i * 100.0 / episodes))
             sys.stdout.flush()
             current = randint(0, goal)  # Select random starting state
             while current != goal:
-                temp = []
-                for possible in range(self.nStates):  # Find possible next states
-                    if self.R[current][possible] != -1:
-                        temp.append(possible)
-                next = temp[randint(0, len(temp) - 1)]  # Select one of the possible states at random
+                next = self.getAction(current)  # Select next state
                 maxQ = max(self.Q[next])  # Find maximum Q value for next state
 
-                self.Q[current][next] = self.R[current][next] + self.gama * maxQ  # Update the Q matrix
+                # Update the Q matrix
+                self.Q[current][next] += self.alpha * (self.R[current][next] + self.gama * maxQ - self.Q[current][next])
                 current = next  # Start from the new state in next iteration
         return
+
+    def computeActionFromQValues(self, state):
+        """Compute the best action to take in a state."""
+        legal = []
+        equal_values = []
+        for possible in range(self.nStates):  # Find possible next states
+            if self.R[state][possible] != -1:
+                legal.append(possible)
+
+        maximum = -10000
+        for action in legal:
+            value = self.Q[state][action]
+            if value > maximum:
+                equal_values = []
+                maximum = value
+                equal_values.append(action)
+            elif value == maximum:
+                equal_values.append(action)
+        return random.choice(equal_values)
+
+    def getAction(self, state):
+        """
+          Compute the action to take in the current state.  With
+          probability self.epsilon, we should take a random action and
+          take the best policy action otherwise.
+        """
+        # Pick Action
+        legal = []
+        for possible in range(self.nStates):  # Find possible next states
+            if self.R[state][possible] != -1:
+                legal.append(possible)
+
+        if flipCoin(self.epsilon):
+            bestAction = random.choice(legal)
+        else:
+            bestAction = self.computeActionFromQValues(state)
+
+        return bestAction
 
     def play(self, start):
         """
@@ -91,7 +128,7 @@ class QLearn:
         current = start
         actions = [start]
         while current != goal:
-            maximum = 0  # Maximum value in a row of a Q matrix
+            maximum = -100  # Maximum value in a row of a Q matrix
             for i in range(self.nStates):
                 if self.Q[current][i] > maximum:
                     maximum = self.Q[current][i]
@@ -246,9 +283,19 @@ if __name__ == '__main__':
         user_print("Neispravan unos. Vrijednost mora biti u intervalu <0, 1]", 'warn')
         gama = float(user_input("Unesite discount faktor:  ") or 0.95)
 
+    alpha = float(user_input("Unesite brzinu ucenja:") or 0.5)
+    while alpha <= 0 or alpha > 1:
+        user_print("Neispravan unos. Vrijednost mora biti u intervalu <0, 1]", 'warn')
+        alpha = float(user_input("Unesite brzinu ucenja:  ") or 0.5)
+
+    epsilon = float(user_input("Unesite epsilon:") or 0.5)
+    while epsilon <= 0 or epsilon > 1:
+        user_print("Neispravan unos. Vrijednost mora biti u intervalu <0, 1]", 'warn')
+        epsilon = float(user_input("Unesite epsilon:  ") or 0.5)
+
     # Make new QLearn object
     user_print("Inicijaliziranje algoritma...", 'info')
-    alg = QLearn(n, gama)
+    alg = QLearn(n, gama, alpha, epsilon)
     user_print("GOTOVO", 'info')
     print
 
