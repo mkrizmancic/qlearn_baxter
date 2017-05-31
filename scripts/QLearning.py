@@ -228,32 +228,33 @@ class StateGenerator:
 
 if __name__ == '__main__':
     # Get user input
-    n = input ("Unesite broj kolutova:  ")
-    gama = float (raw_input ("Unesite discount faktor:  ") or 0.95)
-    while gama <= 0 and gama > 1:
-        print ("Neispravan unos. Vrijednost mora biti u intervalu <0, 1]")
-        gama = float (raw_input ("Unesite discount faktor:  ") or 0.95)
+    n = int(user_input("Unesite broj kolutova:"))
+    gama = float(user_input("Unesite discount faktor:") or 0.95)
+    while gama <= 0 or gama > 1:
+        user_print("Neispravan unos. Vrijednost mora biti u intervalu <0, 1]", 'warn')
+        gama = float(user_input("Unesite discount faktor:  ") or 0.95)
 
     # Make new QLearn object
-    print "Inicijaliziranje algoritma..."
+    user_print("Inicijaliziranje algoritma...", 'info')
     alg = QLearn(n, gama)
-    print "GOTOVO"
+    user_print("GOTOVO", 'info')
     print
 
     # Start learning proccess
-    print "Pocinje proces ucenja..."
+    user_print("Pocinje proces ucenja...", 'info')
     alg.learn()
-    print "GOTOVO"
+    user_print("GOTOVO", 'info')
     print
 
     # Get solution from starting state
-    start = input ("Unesite pocetno stanje:  ")
+    user_print("Unesite pocetno stanje >> ", 'input', False)
+    start = input()
     lookup = alg.lookup.copy()  # Get local copy of lookup dictionary
     if type(start) is tuple:    # Allows users to inpute state both as tuple and index
         if start in lookup:
             start = lookup[start]
         else:
-            print "Nepostojece stanje! Krecem od pocetnog stanja!"
+            user_print("Nepostojece stanje! Krecem od pocetnog stanja!", 'warn')
             start = 0
     actions = alg.play(start)
 

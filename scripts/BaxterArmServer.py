@@ -73,13 +73,14 @@ class BaxterArm:
 
         display_trajectory_publisher = rospy.Publisher(
                                     '/move_group/display_planned_path',
-                                    moveit_msgs.msg.DisplayTrajectory)
+                                    moveit_msgs.msg.DisplayTrajectory,
+                                    queue_size = 1)
 
         if goal.id == 1: 
-            print 'ODLAZAK NA ZADANU POZICIJU'
+            user_print("ODLAZAK NA ZADANU POZICIJU", 'info')
             self.set_goal(pose_target,arm)
             limb_joints = ik_solver.ik_solve(arm, Point(pose_target.position.x+0.07, pose_target.position.y, pose_target.position.z+0.05), pose_target.orientation)
-            
+
             if limb_joints != 0: 
                 chosen_arm.move_to_joint_positions(limb_joints)
                 self.as_res[arm].status = VALID_LIMB_JOINTS 
@@ -91,14 +92,14 @@ class BaxterArm:
                 chosen_server.set_aborted(result=self.as_res[arm])
         
         if goal.id == 2:
-            print 'OTVARANJE GRIPPERA'
+            user_print("OTVARANJE GRIPPERA", 'info')
             chosen_gripper.open()
             self.as_res[arm].status = VALID_LIMB_JOINTS
             self.as_res[arm].id = self.as_goal[arm].id
             chosen_server.set_succeeded(result=self.as_res[arm])
             
         if goal.id == 3:
-            print 'ZATVARANJE GRIPPERA'
+            user_print("ZATVARANJE GRIPPERA", 'info')
             chosen_gripper.close()
             self.as_res[arm].status = VALID_LIMB_JOINTS
             self.as_res[arm].id = self.as_goal[arm].id

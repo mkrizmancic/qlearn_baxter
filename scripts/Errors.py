@@ -1,17 +1,19 @@
+from Util import *
+
 def RaiseNotReachable():
-    print "Locations not reachable! No valid joint solution found!"
+    user_print("Locations not reachable! No valid joint solution found!", 'error')
     return 0
 
 def RaisePickFailed():
-    print "Pick action failed!"
+    user_print("Pick action failed!", 'error')
     return 0
 
 def RaisePlaceFailed():
-    print "Place action failed!"
+    user_print("Place action failed!", 'error')
     return 0
 
 def RaiseGoToFailed(task, destination, height, offset_x, offset_y, offset_z):
-    print "GoTo action failed!"
+    user_print("GoTo action failed!", 'error')
     print ("Task: {0}".format(task))
     print ("Destination: {0}".format(destination))
     print ("Hight: {0}".format(height))
@@ -19,5 +21,5 @@ def RaiseGoToFailed(task, destination, height, offset_x, offset_y, offset_z):
     return 0
 
 def RaisePickAndPlaceFailed():
-    print "Pick and place action failed!"
+    user_print("Pick and place action failed!", 'error')
     return 0

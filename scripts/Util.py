@@ -8,7 +8,36 @@ Functions:
     printGame: Visualizes moves from start to goal state.
     game2robot: Converts moves to format readable to robot-moving function.
 """
+import sys
+
 thickness = 0.06
+
+RED   = "\033[1;31m"  
+BLUE  = "\033[1;34m"
+CYAN  = "\033[1;36m"
+GREEN = "\033[0;32m"
+RESET = "\033[0;0m"
+BOLD    = "\033[;1m"
+REVERSE = "\033[;7m"
+
+def user_print(text, style, new_line = True):
+    if style == 'error': color = RED
+    elif style == 'info': color = CYAN
+    elif style == 'warn': color = BLUE
+    elif style == 'input': color = GREEN
+    sys.stdout.write(color)
+    if new_line:
+        print text
+    else:
+        print text,
+    sys.stdout.write(RESET)
+
+def user_input(text):
+    color = GREEN
+    sys.stdout.write(color)
+    print text, " >> ",
+    sys.stdout.write(RESET)
+    return raw_input()
 
 def get_pick_height(disk):
     """Calculate and return the height from which to pick the disk."""
