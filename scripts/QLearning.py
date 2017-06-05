@@ -39,6 +39,7 @@ class QLearn:
         """
         # Game related variables
         self.nStates = int(pow(3, numberOfDisks))
+        self.n = numberOfDisks
 
         # Variables related to Q-Learning algorithm
         self.gama = discountFactor
@@ -48,7 +49,7 @@ class QLearn:
         self.lookup = {}
 
         # Start state generation
-        StateGenerator(self.R, self.nStates, numberOfDisks, self.lookup)
+        StateGenerator(self.R, self.nStates, self.n, self.lookup)
 
     def learn(self):
         """
@@ -63,6 +64,11 @@ class QLearn:
         for i in range(episodes):  # Repeat learning process
             sys.stdout.write("  {:.0f}% \r".format(i * 100.0 / episodes))  # Display current progress
             sys.stdout.flush()
+
+            if i % 100 == 0:
+                if self.isLearningFinished():
+                    return
+
             current = randint(0, goal)  # Select random starting state
             while current != goal:
                 temp = []
@@ -76,6 +82,28 @@ class QLearn:
                 self.Q[current][next] += self.alpha * (self.R[current][next] + self.gama * maxQ - self.Q[current][next])
                 current = next  # Start from the new state in next iteration
         return
+
+    def isLearningFinished (self):
+        """
+        Check if agent knows enough to stop learning
+
+        Try to play with current brain (Q-Values) and see if it can be done in optimal number of moves
+        """
+        goal = self.nStates - 1
+        counter = 0
+        current = 0
+        while current != goal and counter <= int(pow(2, self.n) - 1):
+            maximum = -1000  # Maximum value in a row of a Q matrix
+            for i in range(self.nStates):
+                if self.Q[current][i] > maximum:
+                    maximum = self.Q[current][i]
+                    maxState = i
+            current = maxState
+            counter += 1
+        if counter > int(pow(2, self.n) - 1):
+            return False
+        else:
+            return True
 
     def play(self, start):
         """
