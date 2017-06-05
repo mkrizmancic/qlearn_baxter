@@ -7,7 +7,6 @@ CREDIT: Lucija Kopic (Graduation Thesis)
 import math
 from threading import Thread
 
-import rospy
 import actionlib
 import tf
 from tf.transformations import quaternion_from_euler
@@ -16,6 +15,7 @@ from baxter_moveit_config.msg import baxterAction, baxterGoal, baxterResult, bax
 
 import Errors
 from Util import *
+
 
 # Comments beginning with "noinspection" are PyCharm auto-generated comments
 # noinspection PyMethodMayBeStatic,PyUnusedLocal,PyNoneFunctionAssignment,PyRedundantParentheses,PyTypeChecker
@@ -32,6 +32,8 @@ class BaxterArmClient:
         self.left_client = actionlib.SimpleActionClient("baxter_action_server_left", baxterAction)
         self.left_client.wait_for_server(rospy.Duration(10.0))
         self.listener = tf.TransformListener()
+        self.left_rod_offset = rospy.get_param('~left_rod')
+        self.right_rod_offset = rospy.get_param('~right_rod')
 
     def transformations(self):
         """Transform rods' coordinate system to the Baxter's coordinate system."""
@@ -86,9 +88,9 @@ class BaxterArmClient:
         goal = self.position(goal, trans, height)
 
         # Calculate offset from the markers
-        if destination == 0: offset_y -= 0.2
+        if destination == 0: offset_y -= self.left_rod_offset
         if destination == 1: offset_y += 0
-        if destination == 2: offset_y += 0.2
+        if destination == 2: offset_y += self.right_rod_offset
 
         # WTF?!
         offset_z += 0.05
@@ -184,7 +186,7 @@ class BaxterArmClient:
             1 if successful, 0 otherwise
         """
         starting_height = get_pick_height(pick_height)
-        # Go in front of the selected rod with the neccessary height
+        # Go in front of the selected rod with the necessary height
         pick1 = self.go_to_position('pick', pick_destination, pick_height, 0, 0, 0)
         if pick1:
             user_print("PICK 1 ok", 'info')

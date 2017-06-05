@@ -4,7 +4,7 @@
 	<include file="$(find tic_tac_drone)/launch/across.launch"/>
 
 	<!-- Start Optitrack node: calculating and distributing postion data -->
-	<node pkg="qlearn_baxter" type="Optitrac.py" name="Optitrack">
+	<node pkg="qlearn_baxter" type="Optitrack .py" name="Optitrack">
 		<remap from="Robot/pose" to="vrpn_client_node/kruna/pose"/>
 
 	</node>

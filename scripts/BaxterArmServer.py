@@ -3,7 +3,6 @@
 import actionlib
 import moveit_commander
 import moveit_msgs.msg
-import rospy
 from baxter_interface import Gripper, Limb
 from baxter_moveit_config.msg import baxterAction, baxterGoal, baxterResult, baxterFeedback
 from geometry_msgs.msg import Pose, Point

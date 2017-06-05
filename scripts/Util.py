@@ -10,10 +10,11 @@ Functions:
 """
 
 import sys
+import rospy
 
 # Comments beginning with "noinspection" are PyCharm auto-generated comments
 
-thickness = 0.06
+disk_height = rospy.get_param('~disk_height')
 
 RED = "\033[1;31m"
 BLUE = "\033[1;34m"
@@ -54,12 +55,12 @@ def user_input(text):
 
 def get_pick_height(disk):
     """Calculate and return the height from which to pick the disk."""
-    return disk * thickness - 0.05 - 0.02 - 0.005
+    return disk * disk_height - 0.05 - 0.02 - 0.005
 
 
 def get_place_height(disk):
     """Calculate and return the height where to place the disk."""
-    return disk * thickness + 0.05 - 0.04 - 0.025 + 0.007
+    return disk * disk_height + 0.05 - 0.04 - 0.025 + 0.007
 
 
 # noinspection PyUnusedLocal

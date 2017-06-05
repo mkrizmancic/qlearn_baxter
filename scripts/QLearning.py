@@ -22,7 +22,7 @@ class QLearn:
 
     Attributes:
         nStates (int): Number of all possible states
-        gama (float): Discount factor
+        gama (float): Discount factor (see qleatning)
         Q (2D float array): Q matrix
         R (2D int array): R matrix
         lookup (dict): Stores relation between states and matrix indexes
@@ -51,7 +51,7 @@ class QLearn:
 
     def learn(self):
         """
-        Train Q matrix (learning proccess). Find out more by studying Q-Learning.
+        Train Q matrix (learning process). Find out more by studying Q-Learning.
 
         'goal', 'current' and 'next' are indexes of goal, current and next states respectively.
 
@@ -59,8 +59,8 @@ class QLearn:
         """
         goal = self.nStates - 1  # Goal state index
         episodes = 3 * self.nStates
-        for i in range(self.nStates):  # Repeat learning proccess
-            sys.stdout.write("  {:.0f}% \r".format(i * 100.0 / episodes))
+        for i in range(self.nStates):  # Repeat learning process
+            sys.stdout.write("  {:.0f}% \r".format(i * 100.0 / episodes))  # Display current progress
             sys.stdout.flush()
             current = randint(0, goal)  # Select random starting state
             while current != goal:
@@ -106,9 +106,12 @@ class StateGenerator:
     """
     Class for generating states for Tower of Hanoi problem and filling out R matrix.
 
-    State is in form of a tuple containing three other tuples representing trhee rods.
+    State is in form of a tuple containing three other tuples representing three rods.
     In each of the three tuples are int values representing disks.
     The smaller the number, the smaller the disk. Left (first, index 0) element is on top.
+    States are generated using iterative recursion. New (unexpanded) states are placed on a stack
+    from where they are popped one by one until all states have been generated.
+    A visited list makes sure no state is expanded more than once.
 
     Attributes:
         startState (tuple): Starting state
@@ -119,7 +122,7 @@ class StateGenerator:
     def __init__(self, R, nStates, numberOfDisks, lookup):
         """
         Create helper variables: list of generated states, dictionary and start and end positions.
-        Start generation proccess.
+        Start generation process.
 
         Args:
             R (2D array): Reference to the R-matrix from QLearn (lists in python are immutable)
@@ -144,7 +147,7 @@ class StateGenerator:
         self.lookup[self.startState] = 0
         self.lookup[self.finalState] = nStates - 1
 
-        toGenerate = [self.startState]
+        toGenerate = [self.startState]  # Stack containing states for expansion
 
         while len(toGenerate) > 0:
             fromState = toGenerate.pop()
@@ -204,7 +207,7 @@ class StateGenerator:
 
         Args:
             nextState (tuple): State we are transitioning to
-            fromIndex (int): Index of a state we are transitiong from
+            fromIndex (int): Index of a state we are transitioning from
 
         Returns:
             Index of next state if this transition has not yet been noted in R matrix
@@ -228,7 +231,7 @@ class StateGenerator:
         return 0
 
     def isValid(self, state):
-        """Chek validity of the state. Larger disk must not be on top of the smaller."""
+        """Check validity of the state. Larger disk must not be on top of the smaller."""
         for i in range(3):
             if len(state[i]):
                 minimum = state[i][0]
@@ -252,7 +255,7 @@ if __name__ == '__main__':
     user_print("GOTOVO", 'info')
     print
 
-    # Start learning proccess
+    # Start learning process
     user_print("Pocinje proces ucenja...", 'info')
     alg.learn()
     user_print("GOTOVO", 'info')

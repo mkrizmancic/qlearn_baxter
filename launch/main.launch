@@ -11,11 +11,11 @@
 	<include file="$(find baxter_moveit_config)/launch/planning_context.launch">
 		<arg name="load_robot_description" value="true"/>
 	</include>
-
 	<include file="$(find baxter_moveit_config)/launch/move_group.launch"/>
+	<node pkg="baxter_interface" type="joint_trajectory_action_server.py" name="joint_trajectory_action_server"/> 
 
 	<node pkg="qlearn_baxter" type="BaxterArmServer.py" name="Server" output="screen"/>
-	<node pkg="qlearn_baxter" type="BaxterMain.py" name="Main" output="screen"/>
+	<node pkg="qlearn_baxter" type="BaxterMain.py" name="Main" output="screen">
 
 
 </launch>

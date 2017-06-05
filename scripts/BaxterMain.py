@@ -6,6 +6,7 @@ from QLearning import QLearn
 from BaxterArmClient import BaxterArmClient
 from Util import *
 
+
 # Comments beginning with "noinspection" are PyCharm auto-generated comments
 
 class BaxterMain:
@@ -80,7 +81,7 @@ class BaxterMain:
 
 
 if __name__ == '__main__':
-    time.sleep(35)
+    time.sleep(5)
     rospy.init_node('BaxterMain')
     try:
         node = BaxterMain()
