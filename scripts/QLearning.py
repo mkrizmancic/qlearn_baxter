@@ -22,14 +22,14 @@ class QLearn:
 
     Attributes:
         nStates (int): Number of all possible states
-        gama (float): Discount factor (see qleatning)
+        gama (float): Discount factor (see qlearning)
         Q (2D float array): Q matrix
         R (2D int array): R matrix
         lookup (dict): Stores relation between states and matrix indexes
     """
 
     # noinspection PyUnusedLocal
-    def __init__(self, numberOfDisks, discountFactor):
+    def __init__(self, numberOfDisks, discountFactor=0.95, learningRate=0.5):
         """
         Initialize Q and R matrices, set local helper variables and start state generation.
 
@@ -42,6 +42,7 @@ class QLearn:
 
         # Variables related to Q-Learning algorithm
         self.gama = discountFactor
+        self.alpha = learningRate
         self.Q = [[0 for i in range(self.nStates)] for j in range(self.nStates)]
         self.R = [[-1 for i in range(self.nStates)] for j in range(self.nStates)]
         self.lookup = {}
@@ -59,7 +60,7 @@ class QLearn:
         """
         goal = self.nStates - 1  # Goal state index
         episodes = 3 * self.nStates
-        for i in range(self.nStates):  # Repeat learning process
+        for i in range(episodes):  # Repeat learning process
             sys.stdout.write("  {:.0f}% \r".format(i * 100.0 / episodes))  # Display current progress
             sys.stdout.flush()
             current = randint(0, goal)  # Select random starting state
@@ -71,7 +72,8 @@ class QLearn:
                 next = temp[randint(0, len(temp) - 1)]  # Select one of the possible states at random
                 maxQ = max(self.Q[next])  # Find maximum Q value for next state
 
-                self.Q[current][next] = self.R[current][next] + self.gama * maxQ  # Update the Q matrix
+                # Update the Q matrix
+                self.Q[current][next] += self.alpha * (self.R[current][next] + self.gama * maxQ - self.Q[current][next])
                 current = next  # Start from the new state in next iteration
         return
 
@@ -145,7 +147,8 @@ class StateGenerator:
         self.startState = (ordered, (), ())
         self.finalState = ((), (), ordered)
         self.lookup[self.startState] = 0
-        self.lookup[self.finalState] = nStates - 1
+        goal = nStates - 1
+        self.lookup[self.finalState] = goal
 
         toGenerate = [self.startState]  # Stack containing states for expansion
 
@@ -153,6 +156,7 @@ class StateGenerator:
             fromState = toGenerate.pop()
             while fromState in generated:
                 if len(toGenerate) <= 0:
+                    self.R[goal][goal] = 100
                     return
                 fromState = toGenerate.pop()
             generated.append(fromState)
@@ -249,9 +253,14 @@ if __name__ == '__main__':
         user_print("Neispravan unos. Vrijednost mora biti u intervalu <0, 1]", 'warn')
         gama = float(user_input("Unesite discount faktor:  ") or 0.95)
 
+    alpha = float(user_input("Unesite brzinu ucenja:") or 0.5)
+    while alpha <= 0 or alpha > 1:
+        user_print("Neispravan unos. Vrijednost mora biti u intervalu <0, 1]", 'warn')
+        alpha = float(user_input("Unesite brzinu ucenja:") or 0.5)
+
     # Make new QLearn object
     user_print("Inicijaliziranje algoritma...", 'info')
-    alg = QLearn(n, gama)
+    alg = QLearn(n, gama, alpha)
     user_print("GOTOVO", 'info')
     print
 
@@ -265,7 +274,7 @@ if __name__ == '__main__':
     user_print("Unesite pocetno stanje >> ", 'input', False)
     start = input()
     lookup = alg.lookup.copy()  # Get local copy of lookup dictionary
-    if type(start) is tuple:  # Allows users to inpute state both as tuple and index
+    if type(start) is tuple:  # Allows users to input state both as tuple and index
         if start in lookup:
             start = lookup[start]
         else:

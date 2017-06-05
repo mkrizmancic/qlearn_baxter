@@ -41,9 +41,14 @@ class BaxterMain:
             user_print("Neispravan unos. Vrijednost mora biti u intervalu <0, 1]", 'warn')
             gama = float(user_input("Unesite discount faktor:") or 0.95)
 
-            # Make new QLearn object
+        alpha = float(user_input("Unesite brzinu ucenja:") or 0.5)
+        while alpha <= 0 or alpha > 1:
+            user_print("Neispravan unos. Vrijednost mora biti u intervalu <0, 1]", 'warn')
+            alpha = float(user_input("Unesite brzinu ucenja:") or 0.5)
+
+        # Make new QLearn object
         user_print("Inicijaliziranje algoritma...", 'info')
-        alg = QLearn(n, gama)
+        alg = QLearn(n, gama, alpha)
         user_print("GOTOVO", 'info')
         print
 
