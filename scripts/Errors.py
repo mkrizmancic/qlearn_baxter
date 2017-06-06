@@ -1,8 +1,9 @@
 from Util import *
 
 
-def RaiseNotReachable():
+def RaiseNotReachable(pos):
     user_print("Locations not reachable! No valid joint solution found!", 'error')
+    print pos
     return 0
 
 

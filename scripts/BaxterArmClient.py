@@ -34,11 +34,12 @@ class BaxterArmClient:
         self.listener = tf.TransformListener()
         self.left_rod_offset = rospy.get_param('~left_rod')
         self.right_rod_offset = rospy.get_param('~right_rod')
+        self.center_rod_offset = rospy.get_param('~center_rod')
 
     def transformations(self):
         """Transform rods' coordinate system to the Baxter's coordinate system."""
-        self.listener.waitForTransform("/base", "/stup", rospy.Time(0), rospy.Duration(8.0))
-        (trans, rot) = self.listener.lookupTransform('/base', '/stup', rospy.Time(0))
+        self.listener.waitForTransform("/base", "/rods", rospy.Time(0), rospy.Duration(8.0))
+        (trans, rot) = self.listener.lookupTransform('/base', '/rods', rospy.Time(0))
         return trans
 
     def position(self, target_position, trans, height):
@@ -61,9 +62,9 @@ class BaxterArmClient:
         target_position.orientation.y = quaternion[1]
         target_position.orientation.z = quaternion[2]
         target_position.orientation.w = quaternion[3]
-        target_position.position.x = trans[0] + 0.08 + -0.18 - 0.05
-        target_position.position.y = trans[1] - 0.05
-        target_position.position.z = trans[2] + height - 0.015
+        target_position.position.x = trans[0]
+        target_position.position.y = trans[1]
+        target_position.position.z = trans[2] + height
         return target_position
 
     def go_to_position(self, task, destination, height, offset_x, offset_y, offset_z):
@@ -88,16 +89,13 @@ class BaxterArmClient:
         goal = self.position(goal, trans, height)
 
         # Calculate offset from the markers
-        if destination == 0: offset_y -= self.left_rod_offset
+        if destination == 0: offset_y += self.left_rod_offset
         if destination == 1: offset_y += 0
-        if destination == 2: offset_y += self.right_rod_offset
-
-        # WTF?!
-        offset_z += 0.05
-        offset_z -= 0.02
-        offset_y -= 0.05
-        if destination == 0: offset_z -= 0.005
-        if destination == 1: offset_z -= 0.005
+        if destination == 2: offset_y -= self.right_rod_offset
+        offset_x -= self.center_rod_offset
+        offset_x -= 0.13 # Zbog duljine hvataljki
+        offset_z -= 0.045 # Zbog neke visine, ide van s dobrom tf
+        offset_y += 0.03
 
         # Update goal with calculated offsets
         goal.position.x += offset_x
@@ -167,13 +165,15 @@ class BaxterArmClient:
         goal_final = baxterGoal(id=3, pose=goal)
         status = self.left_client.send_goal_and_wait(goal_final)
         result = self.left_client.wait_for_result()
+        return result
 
     def open_gripper(self):
         """Send the instruction to the robot to open the gripper."""
         goal = Pose()
         goal_final = baxterGoal(id=2, pose=goal)
-        self.left_client.send_goal(goal_final)
-        self.left_client.wait_for_result()
+        self.left_client.send_goal_and_wait(goal_final)
+        result = self.left_client.wait_for_result()
+        return result
 
     def pick(self, pick_destination, pick_height):
         """
@@ -228,7 +228,7 @@ class BaxterArmClient:
                 place3 = self.open_gripper()
                 if place3:
                     user_print("PLACE 3 OK", 'info')
-                    # Lower the arm slightly more to avoid hitting the diske
+                    # Lower the arm slightly more to avoid hitting the disk
                     place4 = self.go_to_position('place', place_destination, place_height, 0.1, 0, -0.015)
                     if place4:
                         user_print("PLACE 4 OK", 'info')
@@ -266,36 +266,29 @@ class BaxterArmClient:
             else:
                 return 1
 
-    def calibration_rod(self):
-        """Calibrate rod positions."""
-        # Go to 1st, 2nd and 3rd rod
-        self.go_to_position('pick', 0, 1, 0.1 + 0.15, 0, 0)
-        rospy.sleep(2)
-        self.go_to_position('pick', 1, 1, 0.1 + 0.15, 0, 0)
-        rospy.sleep(2)
-        self.go_to_position('pick', 2, 1, 0.1 + 0.15, 0, 0)
-        rospy.sleep(2)
-
-    def calibration_disk(self):
+    def calibration_single(self, rod):
         """Calibrate disk positions."""
-        # Go to disks 1, 2 and 3 on the first rod
-        self.go_to_position('pick', 0, 1, 0, 0, 0)
-        self.go_to_position('pick', 0, 1, 0.1, 0, 0)
-        rospy.sleep(10)
-        self.go_to_position('pick', 0, 1, 0.1, 0, 0.01)
-        self.go_to_position('pick', 0, 1, 0, 0, 0)
-        # Go to disks 1, 2 and 3 on the second rod
-        self.go_to_position('pick', 0, 2, 0, 0, 0)
-        self.go_to_position('pick', 0, 2, 0.1, 0, 0)
-        rospy.sleep(10)
-        self.go_to_position('pick', 0, 2, 0.1, 0, 0.01)
-        self.go_to_position('pick', 0, 2, 0, 0, 0)
-        # Go to disks 1, 2 and 3 on the third rod
-        self.go_to_position('pick', 0, 3, 0, 0, 0)
-        self.go_to_position('pick', 0, 3, 0.1, 0, 0)
-        rospy.sleep(10)
-        self.go_to_position('pick', 0, 3, 0.1, 0, 0.01)
-        self.go_to_position('pick', 0, 3, 0, 0, 0)
+        # Go to 1st disk
+        self.go_to_position('pick', rod, 1, 0, 0, 0)
+        self.go_to_position('pick', rod, 1, 0.1, 0, 0)
+        rospy.sleep(3)
+        self.go_to_position('pick', rod, 1, 0, 0, 0)
+        # Go to 2nd disk
+        self.go_to_position('pick', rod, 2, 0, 0, 0)
+        self.go_to_position('pick', rod, 2, 0.1, 0, 0)
+        rospy.sleep(3)
+        self.go_to_position('pick', rod, 2, 0, 0, 0)
+        # Go to 3rd disk
+        self.go_to_position('pick', rod, 3, 0, 0, 0)
+        self.go_to_position('pick', rod, 3, 0.1, 0, 0)
+        rospy.sleep(3)
+        self.go_to_position('pick', rod, 3, 0, 0, 0)
+
+    def calibration_all(self):
+        # Go to 1st, 2nd and 3rd rod
+        self.calibration_single(0)
+        self.calibration_single(1)
+        self.calibration_single(2)
 
     def start(self, pick_destination, pick_height, place_destination, place_height):
         thread = Thread(target=self.pick_and_place,
@@ -303,16 +296,10 @@ class BaxterArmClient:
         thread.start()
         thread.join()
 
-    def kalibracija_kolutovi(self):
-        thread = Thread(target=self.calibration_disk, args=(1))
+    def calibration(self):
+        thread = Thread(target=self.calibration_all)
         thread.start()
         thread.join()
-
-    def kalibracija_stupovi(self):
-        thread = Thread(target=self.calibration_rod, args=(1))
-        thread.start()
-        thread.join()
-
 
 if __name__ == '__main__':
     rospy.init_node('Baxter_Client', disable_signals=True)

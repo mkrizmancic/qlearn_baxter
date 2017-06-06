@@ -44,4 +44,4 @@ def ik_solve(limb, pos, orient):
         # print limb_joints
         return limb_joints
     else:
-        return Errors.RaiseNotReachable()
+        return Errors.RaiseNotReachable(pos)

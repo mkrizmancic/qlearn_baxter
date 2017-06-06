@@ -81,8 +81,9 @@ class BaxterArm:
         if goal.id == 1:
             user_print("ODLAZAK NA ZADANU POZICIJU", 'info')
             self.set_goal(pose_target, arm)
-            limb_joints = ik_solver.ik_solve(arm, Point(pose_target.position.x + 0.07, pose_target.position.y,
+            limb_joints = ik_solver.ik_solve(arm, Point(pose_target.position.x + 0.03   , pose_target.position.y,
                                                         pose_target.position.z + 0.05), pose_target.orientation)
+            #TODO jesu li to offseti zbog alata?
 
             if limb_joints != 0:
                 chosen_arm.move_to_joint_positions(limb_joints)

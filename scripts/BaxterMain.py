@@ -17,21 +17,14 @@ class BaxterMain:
         # Option to calibrate
         query = user_input("Zelite li provesti kalibraciju? d/n")
         if query == 'd':
-            self.calibration()
+            self.client.calibration()
 
         query = user_input("Test? d/n")
         if query == 'd':
-            self.client.test()
+            self.client.test2()
         self.startProcedure()
-
-    def calibration(self):
-        query = user_input("Kalibracija kolutova? d/n")
-        if query == 'd':
-            self.client.kalibracija_kolutovi()
-
-        query = user_input("Kalibracija stupova? d/n")
-        if query == 'd':
-            self.client.kalibracija_stupovi()
+        while user_input("Zelite li ponoviti igru? d/n") == 'd':
+            self.startProcedure()
 
     def startProcedure(self):
         # Get user input
@@ -82,7 +75,9 @@ class BaxterMain:
 
         # Start the robot and send commands step-by-step
         for step in commands:
-            self.client.start(step[0], step[1], step[2], step[3])
+            prompt = user_input("Sljedeci korak? d/n")
+            if prompt:
+                self.client.start(step[0], step[1], step[2], step[3])
 
 
 if __name__ == '__main__':

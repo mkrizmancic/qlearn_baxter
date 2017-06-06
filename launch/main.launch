@@ -12,10 +12,15 @@
 		<arg name="load_robot_description" value="true"/>
 	</include>
 	<include file="$(find baxter_moveit_config)/launch/move_group.launch"/>
+	<include file="$(find tf_transform)/launch/optitrack_only.launch"/>
 	<node pkg="baxter_interface" type="joint_trajectory_action_server.py" name="joint_trajectory_action_server"/> 
 
 	<node pkg="qlearn_baxter" type="BaxterArmServer.py" name="Server" output="screen"/>
 	<node pkg="qlearn_baxter" type="BaxterMain.py" name="Main" output="screen">
-
-
+		<param name="left_rod" value="0.2"/>
+		<param name="right_rod" value="0.2"/>
+		<param name="center_rod" value="0.2"/>
+		<param name="disk_height" value="0.06"/>
+	</node>
+	<node pkg="tf_transform" type="baxter_optitrack_transformation.py" name="transformations"/>
 </launch>

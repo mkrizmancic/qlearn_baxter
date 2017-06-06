@@ -56,13 +56,13 @@ def user_input(text):
 def get_pick_height(disk):
     """Calculate and return the height from which to pick the disk."""
     disk_height = rospy.get_param('~disk_height')
-    return disk * disk_height - 0.05 - 0.02 - 0.005
+    return disk * disk_height
 
 
 def get_place_height(disk):
     """Calculate and return the height where to place the disk."""
     disk_height = rospy.get_param('~disk_height')
-    return disk * disk_height + 0.05 - 0.04 - 0.025 + 0.007
+    return disk * disk_height
 
 
 # noinspection PyUnusedLocal
@@ -130,6 +130,7 @@ def game2robot(sequence):
             elif len(fromState[j]) < len(toState[j]):  # ... if there are more disks after...
                 place_destination = j  # ...this is the rod to place to
                 place_height = len(fromState[j])  # Number of disks BEFORE placing
+                place_height += 1  # We need height AFTER placing so add 1
         commands.append((pick_destination, pick_height, place_destination, place_height))
 
     return commands
