@@ -1,17 +1,15 @@
-#!/usr/bin/env python 
+#!/usr/bin/env python
 """
 This module is used for broadcasting transformations from Optitrack
-coordinate frame during normal operation.
-Do not confuse it with optitrack_find.py which is used while searching for transformations.
+coordinate frame while looking for transformations to Baxter's frame.
+Do not confuse it with OptitrackTF.py which is used during normal operation.
 """
 import rospy
 import tf
 from geometry_msgs.msg import PoseStamped
-from tf.transformations import euler_from_quaternion
-from math import degrees
 
 
-class OptitrackNode:
+class OptitrackFind:
     """
     Optitrack ROS node for space positioning and broadcasting transformations.
 
@@ -21,7 +19,7 @@ class OptitrackNode:
 
     Attributes:
         br_head: Broadcasting transformation for Baxter's head
-        br_rods: Broadcasting transformation for rods location
+        br_arm: Broadcasting transformation for Baxter's arm
     """
 
     def __init__(self):
@@ -29,11 +27,11 @@ class OptitrackNode:
 
         # Create broadcasters
         self.br_head = tf.TransformBroadcaster()
-        self.br_rods = tf.TransformBroadcaster()
+        self.br_arm = tf.TransformBroadcaster()
 
         # Create subscribers
         rospy.Subscriber("bax_head/pose", PoseStamped, self.head_callback, queue_size=1)
-        rospy.Subscriber("rods/pose", PoseStamped, self.rod_callback, queue_size=1)
+        rospy.Subscriber("bax_arm/pose", PoseStamped, self.arm_callback, queue_size=1)
 
         # Main while loop.
         rate = rospy.Rate(50)
@@ -51,13 +49,10 @@ class OptitrackNode:
         qz = data.pose.orientation.y
         qw = data.pose.orientation.w
 
-        # deg = euler_from_quaternion((qx, qy, qz, qw))
-        # # print ("{:f} | {:f} | {:f}".format(degrees(deg[0]), degrees(deg[1]), degrees(deg[2])))
-
         self.br_head.sendTransform((x, y, z), (qx, qy, qz, qw), rospy.Time.now(), "/bax_head", "/optitrack")
 
-    def rod_callback(self, data):
-        """ Callback function that adjust axis data for rods and sends transform. """
+    def arm_callback(self, data):
+        """ Callback function that adjust axis data for our Baxter's arm and sends transform. """
         x = data.pose.position.x
         y = -data.pose.position.z
         z = data.pose.position.y
@@ -67,16 +62,16 @@ class OptitrackNode:
         qz = data.pose.orientation.y
         qw = data.pose.orientation.w
 
-        self.br_rods.sendTransform((x, y, z), (qx, qy, qz, qw), rospy.Time.now(), "/rods", "/optitrack")
+        self.br_arm.sendTransform((x, y, z), (qx, qy, qz, qw), rospy.Time.now(), "/bax_arm", "/optitrack")
 
 
 if __name__ == '__main__':
     # Initialize the node and name it.
-    rospy.init_node('OptitrackTF')
+    rospy.init_node('Optitrack_find')
 
     # Go to class functions that do all the heavy lifting.
     # Do error checking.
     try:
-        on = OptitrackNode()
+        of = OptitrackFind()
     except rospy.ROSInterruptException:
         pass

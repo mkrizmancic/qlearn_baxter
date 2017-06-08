@@ -1,5 +1,10 @@
 #!/usr/bin/env python
-# dio funkcije, odnosno nekoliko metoda, je preuzeto iz Diplomskog rada Miriam Bilac
+"""
+CREDIT:
+A part of the script (a few methods) was taken from graduation thesis by Miriam Bilac
+at Faculty of Electrical Engineering and Computing, University of Zagreb.
+"""
+
 import actionlib
 import moveit_commander
 import moveit_msgs.msg
@@ -18,7 +23,9 @@ INVALID_LIMB_JOINTS = 0
 # noinspection PyMethodMayBeStatic,PyAttributeOutsideInit,PyUnusedLocal
 
 class BaxterArm:
+    """Actionlib server for Baxter's arm. See more here: http://wiki.ros.org/actionlib"""
     def __init__(self, arm):
+        """ Initialize and start actionlib server. """
         self.as_goal = {'left': baxterGoal(), 'right': baxterGoal()}
         self.as_feed = {'left': baxterFeedback(), 'right': baxterFeedback()}
         self.as_res = {'left': baxterResult(), 'right': baxterResult()}
@@ -81,8 +88,8 @@ class BaxterArm:
         if goal.id == 1:
             user_print("ODLAZAK NA ZADANU POZICIJU", 'info')
             self.set_goal(pose_target, arm)
-            limb_joints = ik_solver.ik_solve(arm, Point(pose_target.position.x + 0.03   , pose_target.position.y,
-                                                        pose_target.position.z + 0.05), pose_target.orientation)
+            limb_joints = ik_solver.ik_solve(arm, Point(pose_target.position.x, pose_target.position.y,
+                                                        pose_target.position.z - 0.02), pose_target.orientation)
             #TODO jesu li to offseti zbog alata?
 
             if limb_joints != 0:

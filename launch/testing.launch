@@ -19,7 +19,7 @@
 
 	<!-- Start Baxter's client and server and qlearning algorithm -->
 	<node pkg="qlearn_baxter" type="BaxterArmServer.py" name="Server" output="screen"/>
-	<node pkg="qlearn_baxter" type="BaxterMain.py" name="Main" output="screen">
+	<node pkg="qlearn_baxter" type="testing.py" name="Test" output="screen">
 		<param name="left_rod" value="0.2"/>
 		<param name="right_rod" value="0.2"/>
 		<param name="center_rod" value="0.2"/>

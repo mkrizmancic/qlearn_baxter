@@ -17,12 +17,15 @@ class QLearn:
     Understanding class implementation requires knowledge about the algorithm and the problem.
     You can find out more about Q-Learning here: https://en.wikipedia.org/wiki/Q-learning
     If you are interested in Tower of Hanoi, please see: https://en.wikipedia.org/wiki/Tower_of_Hanoi
-    You can also compare this class to a similar one written in C# here:
+    You can also compare this class to similar projects by other people:
     https://github.com/Kenandeen/machine-learning/tree/master/TowersOfHanoi
+    https://github.com/khpeek/Q-learning-Hanoi
+    https://github.com/dannyX21/hanoi-qlearning
 
     Attributes:
         nStates (int): Number of all possible states
         gama (float): Discount factor (see qlearning)
+        alpha (float): Learning rate (see qlearning)
         Q (2D float array): Q matrix
         R (2D int array): R matrix
         lookup (dict): Stores relation between states and matrix indexes
@@ -36,6 +39,7 @@ class QLearn:
         Args:
             numberOfDisks (int): Number of disks in Tower of Hanoi problem
             discountFactor (float): Discount factor (see qlearning)
+            learningRate (float): Learning rate (see qlearning)
         """
         # Game related variables
         self.nStates = int(pow(3, numberOfDisks))
@@ -59,8 +63,8 @@ class QLearn:
         Args: none
         """
         goal = self.nStates - 1  # Goal state index
-        episodes = 3 * self.nStates
-        for i in range(episodes):  # Repeat learning process
+        episodes = 3 * self.nStates  # Number of iterations for learning process
+        for i in range(episodes):
             sys.stdout.write("  {:.0f}% \r".format(i * 100.0 / episodes))  # Display current progress
             sys.stdout.flush()
             current = randint(0, goal)  # Select random starting state
@@ -81,6 +85,9 @@ class QLearn:
         """
         Utilize gained knowledge to solve the problem.
 
+        Q matrix should by now be filled with Q-values.
+        Best action (next state) to take from some given state is the one that has highest Q-value.
+        For each state find the one with highest value, save it and use it as the next starting point.
         'goal', 'current' and 'maxState' are indexes of goal, current and state with max value respectively.
 
         Args:
@@ -115,9 +122,18 @@ class StateGenerator:
     from where they are popped one by one until all states have been generated.
     A visited list makes sure no state is expanded more than once.
 
+    Example:
+                                                         |   |   |
+                                                         1   |   |
+        state tuple ( (1, 2), (4,), (3,) ) represents    2   3   4
+                                                       =============
+                                                       =============
     Attributes:
         startState (tuple): Starting state
         finalState (tuple): Goal state
+        R (2D int array): R matrix
+        lookup (dict): Stores relation between states and matrix indexes
+        freeIndex (int): Keeps available state indexes
     """
 
     # noinspection PyShadowingNames
@@ -127,19 +143,19 @@ class StateGenerator:
         Start generation process.
 
         Args:
-            R (2D array): Reference to the R-matrix from QLearn (lists in python are immutable)
+            R (2D array): Reference to the R-matrix from QLearn (lists in python are mutable)
             nStates (int): Total number of states
             numberOfDisks (int): Number of disks in game
-            lookup (dict): Stores relation between states and matrix indexes
+            lookup (dict): Stores relation between states and matrix indexes (dictionaries in python are mutable)
         """
         self.R = R
 
         # Helper variables
         self.visited = [[0 for i in range(nStates)] for j in range(nStates)]
-        generated = []
         self.lookup = lookup
         self.freeIndex = 1  # Next available index for storing storing states in dictionary
-        ordered = tuple()  # Tuple containing disks in correct starting and final order
+        generated = []      # List containing generated states
+        ordered = tuple()   # Tuple containing disks in correct starting and final order
         for i in range(numberOfDisks):
             ordered += (i + 1,)
 
@@ -287,7 +303,6 @@ if __name__ == '__main__':
     sequence = index2state(lookup, actions, alg.nStates)
     printGame(sequence, n)
 
-    # Get commands for the robot - USED FOR DEBUGGING
+    # Get commands for the robot
     print
     commands = game2robot(sequence)
-    print commands

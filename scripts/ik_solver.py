@@ -4,7 +4,8 @@ This module is used for solving inverse kinematics for Baxter Robot.
 Functions:
     ik_solve: Actual implementation of IK solving algorithm
 
-CREDIT: Miram Bilac (Graduation Thesis)
+CREDIT: Miram Bilac (graduation thesis)
+at Faculty of Electrical Engineering and Computing, University of Zagreb
 """
 
 import rospy
@@ -18,16 +19,13 @@ import Errors
 # Comments beginning with "noinspection" are PyCharm auto-generated comments
 
 def ik_solve(limb, pos, orient):
-    # rospy.init_node("rsdk_ik_service_client")
     ns = "ExternalTools/" + limb + "/PositionKinematicsNode/IKService"
     iksvc = rospy.ServiceProxy(ns, SolvePositionIK)
     ikreq = SolvePositionIKRequest()
-    # print "iksvc: ", iksvc
-    # print "ikreq: ", ikreq
+
     hdr = Header(stamp=rospy.Time.now(), frame_id='base')
     poses = {
-        str(limb): PoseStamped(header=hdr,
-                               pose=Pose(position=pos, orientation=orient))}
+        str(limb): PoseStamped(header=hdr, pose=Pose(position=pos, orientation=orient))}
 
     ikreq.pose_stamp.append(poses[limb])
     try:
@@ -38,10 +36,7 @@ def ik_solve(limb, pos, orient):
         return 1
 
     if resp.isValid[0]:
-        # print("SUCCESS - Valid Joint Solution Found:")
-        # Format solution into Limb API-compatible dictionary
         limb_joints = dict(zip(resp.joints[0].name, resp.joints[0].position))
-        # print limb_joints
         return limb_joints
     else:
         return Errors.RaiseNotReachable(pos)

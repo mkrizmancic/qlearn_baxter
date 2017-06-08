@@ -19,9 +19,6 @@ class BaxterMain:
         if query == 'd':
             self.client.calibration()
 
-        query = user_input("Test? d/n")
-        if query == 'd':
-            self.client.test2()
         self.startProcedure()
         while user_input("Zelite li ponoviti igru? d/n") == 'd':
             self.startProcedure()
@@ -29,12 +26,12 @@ class BaxterMain:
     def startProcedure(self):
         # Get user input
         n = int(user_input("Unesite broj kolutova:"))
-        gama = float(user_input("Unesite discount faktor:") or 0.95)
+        gama = float(user_input("Unesite discount faktor <0, 1]:") or 0.95)
         while gama <= 0 or gama > 1:
             user_print("Neispravan unos. Vrijednost mora biti u intervalu <0, 1]", 'warn')
             gama = float(user_input("Unesite discount faktor:") or 0.95)
 
-        alpha = float(user_input("Unesite brzinu ucenja:") or 0.5)
+        alpha = float(user_input("Unesite brzinu ucenja <0, 1]:") or 0.5)
         while alpha <= 0 or alpha > 1:
             user_print("Neispravan unos. Vrijednost mora biti u intervalu <0, 1]", 'warn')
             alpha = float(user_input("Unesite brzinu ucenja:") or 0.5)
@@ -68,16 +65,13 @@ class BaxterMain:
         sequence = index2state(lookup, actions, alg.nStates)
         printGame(sequence, n)
 
-        # Get commands for the robot - USED FOR DEBUGGING
+        # Get commands for the robot
         print
         commands = game2robot(sequence)
-        print commands
 
         # Start the robot and send commands step-by-step
         for step in commands:
-            prompt = user_input("Sljedeci korak? d/n")
-            if prompt:
-                self.client.start(step[0], step[1], step[2], step[3])
+            print self.client.start(step[0], step[1], step[2], step[3])
 
 
 if __name__ == '__main__':
