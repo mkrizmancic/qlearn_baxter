@@ -1,4 +1,5 @@
-#!/usr/bin/env python  
+#!/usr/bin/env python
+"""Calculate transformation matrices and broadcast transform from robot's base to head markers."""
 import rospy
 import tf
 import math
@@ -19,26 +20,26 @@ if __name__ == '__main__':
         except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
             continue
 
-        # Rotations->setting all frames in same direction !! ------------------------
+        # Rotations
         rot_OG = Rotation.Quaternion(*rot_OG)
         rot_OA = Rotation.Quaternion(*rot_OA)
         rot_BC = Rotation.Quaternion(*rot_BC)
         rot_AC = Rotation.RPY(math.pi / 2, -math.pi, math.pi / 2)
 
-        # creating Frames -----------------------------------------------------------
+        # Creating Frames
         T_OG = Frame(rot_OG, Vector(*trans_OG))
         T_OA = Frame(rot_OA, Vector(*trans_OA))
         T_BC = Frame(rot_BC, Vector(*trans_BC))
         T_AC = Frame(rot_AC, Vector(0, 0, 0))
 
-        # finding right Transformation ----------------------------------------------
+        # Finding right transformation
         T_GB = T_OG.Inverse() * T_OA * T_AC * T_BC.Inverse()
 
         T_empty_p = Vector(0, 0, 0)
         T_empty_Q = Rotation.Quaternion(0, 0, 0, 1)
         T_empty = Frame(T_empty_Q, T_empty_p)
 
-        # sending new Transformations -----------------------------------------------
+        # Broadcast new transformations
         br.sendTransform(T_GB.p, T_GB.M.GetQuaternion(), rospy.Time.now(), 'base', 'bax_head')
         br.sendTransform(T_GB.p, T_GB.M.GetQuaternion(), rospy.Time.now(), 'reference/base', 'bax_head')
         br.sendTransform(T_empty.p, T_empty.M.GetQuaternion(), rospy.Time.now(), 'world', 'base')

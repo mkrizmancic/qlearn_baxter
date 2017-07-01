@@ -10,7 +10,15 @@ from Util import *
 # Comments beginning with "noinspection" are PyCharm auto-generated comments
 
 class BaxterMain:
+    """
+    A top-level class for calling both Q-Learning algorithm (class QLearn)
+    and controls for the robot (class BaxterArmClient).
+
+    Attributes:
+        client: Instance of the BaxterArmClient class
+    """
     def __init__(self):
+        """Start up arm client, ask for calibration and start the whole playing procedure."""
         # Create class instances
         self.client = BaxterArmClient()
 
@@ -24,6 +32,10 @@ class BaxterMain:
             self.startProcedure()
 
     def startProcedure(self):
+        """
+        Get user input for Q-Learning hyper-parameters, create a class instance,
+        start learning process, find the solution and run that solution on the robot.
+        """
         # Get user input
         n = int(user_input("Unesite broj kolutova:"))
         gama = float(user_input("Unesite discount faktor <0, 1]:") or 0.95)
@@ -42,7 +54,7 @@ class BaxterMain:
         user_print("GOTOVO", 'info')
         print
 
-        # Start learning proccess
+        # Start learning process
         user_print("Pocinje proces ucenja...", 'info')
         alg.learn()
         user_print("GOTOVO", 'info')

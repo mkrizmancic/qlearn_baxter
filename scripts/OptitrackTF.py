@@ -7,8 +7,6 @@ Do not confuse it with optitrack_find.py which is used while searching for trans
 import rospy
 import tf
 from geometry_msgs.msg import PoseStamped
-from tf.transformations import euler_from_quaternion
-from math import degrees
 
 
 class OptitrackNode:
@@ -25,7 +23,7 @@ class OptitrackNode:
     """
 
     def __init__(self):
-        """ Set up class variables, initialize broadcaster and start subscribers. """
+        """Set up class variables, initialize broadcaster and start subscribers."""
 
         # Create broadcasters
         self.br_head = tf.TransformBroadcaster()
@@ -41,7 +39,7 @@ class OptitrackNode:
             rate.sleep()
 
     def head_callback(self, data):
-        """ Callback function that adjust axis data for our Baxter's head and sends transform. """
+        """Callback function that adjust axis data for our Baxter's head and sends transform."""
         x = data.pose.position.x
         y = -data.pose.position.z
         z = data.pose.position.y
@@ -57,7 +55,7 @@ class OptitrackNode:
         self.br_head.sendTransform((x, y, z), (qx, qy, qz, qw), rospy.Time.now(), "/bax_head", "/optitrack")
 
     def rod_callback(self, data):
-        """ Callback function that adjust axis data for rods and sends transform. """
+        """Callback function that adjust axis data for rods and sends transform."""
         x = data.pose.position.x
         y = -data.pose.position.z
         z = data.pose.position.y

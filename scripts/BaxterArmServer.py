@@ -89,9 +89,9 @@ class BaxterArm:
             user_print("ODLAZAK NA ZADANU POZICIJU", 'info')
             self.set_goal(pose_target, arm)
             limb_joints = ik_solver.ik_solve(arm, Point(pose_target.position.x, pose_target.position.y,
-                                                        pose_target.position.z - 0.02), pose_target.orientation)
-            #TODO jesu li to offseti zbog alata?
-
+                                                        pose_target.position.z - 0.03), pose_target.orientation)
+                                                        # z is offset because point for calculating IK is
+                                                        # a bit different than actual tool endpoint
             if limb_joints != 0:
                 chosen_arm.move_to_joint_positions(limb_joints)
                 self.as_res[arm].status = VALID_LIMB_JOINTS

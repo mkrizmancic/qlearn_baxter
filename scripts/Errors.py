@@ -1,3 +1,5 @@
+"""Module for error functions"""
+
 from Util import *
 
 

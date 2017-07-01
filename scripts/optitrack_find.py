@@ -23,7 +23,7 @@ class OptitrackFind:
     """
 
     def __init__(self):
-        """ Set up class variables, initialize broadcaster and start subscribers. """
+        """Set up class variables, initialize broadcaster and start subscribers."""
 
         # Create broadcasters
         self.br_head = tf.TransformBroadcaster()
@@ -39,7 +39,7 @@ class OptitrackFind:
             rate.sleep()
 
     def head_callback(self, data):
-        """ Callback function that adjust axis data for our Baxter's head and sends transform. """
+        """Callback function that adjust axis data for our Baxter's head and sends transform."""
         x = data.pose.position.x
         y = -data.pose.position.z
         z = data.pose.position.y
@@ -52,7 +52,7 @@ class OptitrackFind:
         self.br_head.sendTransform((x, y, z), (qx, qy, qz, qw), rospy.Time.now(), "/bax_head", "/optitrack")
 
     def arm_callback(self, data):
-        """ Callback function that adjust axis data for our Baxter's arm and sends transform. """
+        """Callback function that adjust axis data for our Baxter's arm and sends transform."""
         x = data.pose.position.x
         y = -data.pose.position.z
         z = data.pose.position.y

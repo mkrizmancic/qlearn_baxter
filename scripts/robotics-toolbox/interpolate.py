@@ -3,17 +3,27 @@ from __future__ import division
 
 import rospy
 import tf
+import math
 from Quaternion import quaternion
 
+def isnan(quat):
+    """Check if any part of input quaternion is NaN."""
+    if math.isnan(quat.s) or math.isnan(quat.v[0,0]) or math.isnan(quat.v[0,1]) or math.isnan(quat.v[0,2]):
+        return True
+    else:
+        return False
 
-class WriteInFile:
+
+class TF_average:
+    """Record transformations and find average to minimise errors."""
     def __init__(self):
         rospy.init_node('listen_to_write', anonymous=True)
         listener = tf.TransformListener()
         translation = []
         rotation = []
+
         while True:
-            key = raw_input('Enter "a" for recording and "f" for calculate Matrix: ')
+            key = raw_input('Enter "a" for recording and "f" to calculate Matrix: ')
             if key == 'a':
                 print 'You pressed key for listening Transformation! \n'
                 for i in range(0, 2):
@@ -37,43 +47,33 @@ class WriteInFile:
                 y /= len(translation)
                 z /= len(translation)
 
-                print x
-                print y
-                print z
+                print "X: ", x
+                print "Y: ", y
+                print "Z: ", z
+                print
 
                 q = rotation
                 for i in range(0, len(q)):
                     q[i] = quaternion(q[i])
 
-                q_average = []
-                for k in range(0, int(len(q) - 1)):
-                    if k % 2 == 0:
-                        q_average.append(q[k].interp(q[k + 1], 0.5))
-                print q_average
-
-                yes_no = raw_input('Do you want to continue? yes or no: ')
-                if yes_no == 'yes':
+                q_average = q
+                while len(q_average) > 1:
                     q = q_average
                     q_average = []
-                    for k in range(0, len(q) - 1):
-                        q_average.append(q[k].interp(q[k + 1], 0.5))
-                    print q_average
-                    yes_no_2 = raw_input('Do you want to continue? yes or no: ')
-                    if yes_no_2 == 'yes':
-                        q = q_average
-                        q_average = []
-                        for k in range(0, len(q) - 1):
-                            q_average.append(q[k].interp(q[k + 1], 0.5))
-                        print q_average
-                        return
-                    elif yes_no_2 == 'no':
-                        return
-                elif yes_no == 'no':
-                    return
+                    for k in range(0, int(len(q) - 1), 2):
+                        average = q[k].interp(q[k + 1], 0.5)
+                        if isnan(average):
+                            average = q[k]
+                        q_average.append(average)
 
+                print "qX: ", average.v[0,0]
+                print "qY: ", average.v[0,1]
+                print "qZ: ", average.v[0,2]
+                print "qW: ", average.s
+                return
 
 if __name__ == '__main__':
     try:
-        WriteInFile()
+        TF_average()
     except rospy.ROSInterruptException:
         pass

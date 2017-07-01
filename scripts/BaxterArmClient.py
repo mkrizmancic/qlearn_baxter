@@ -34,7 +34,7 @@ class BaxterArmClient:
     """
 
     def __init__(self):
-        """ Initialize and start actionlib client. """
+        """Initialize and start actionlib client."""
         self.left_client = actionlib.SimpleActionClient("baxter_action_server_left", baxterAction)
         self.left_client.wait_for_server(rospy.Duration(10.0))
         self.listener = tf.TransformListener()
@@ -102,8 +102,8 @@ class BaxterArmClient:
         if destination == 2: offset_y -= self.right_rod_offset
         offset_x -= self.center_rod_offset
 
-        offset_x -= 0.1  # Moving from rod to rod should be done 10 cm in front of them
-        offset_x -= 0.04  # Back up a little to compensate for width of the disks
+        offset_x -= 0.1   # Moving from rod to rod should be done 10 cm in front of them
+        offset_x -= 0.03  # Back up a little to compensate for the width of the disks
 
         # Update goal with calculated offsets
         goal.position.x += offset_x
@@ -181,7 +181,7 @@ class BaxterArmClient:
         starting_height = get_place_height(place_height)
         # Go directly above the selected rod - 0.30 is height just above the rods
         self.left_arm.set_joint_position_speed(0.4)  # Set higher speed for non-delicate movements
-        place1 = self.go_to_position('place', place_destination, place_height, 0.09, 0, 0.30 - starting_height)
+        place1 = self.go_to_position('place', place_destination, place_height, 0.1, 0, 0.30 - starting_height)
         if place1:
             if place_height < 3:
                 self.left_arm.set_joint_position_speed(0.08)  # Set lower speed for delicate movements
@@ -234,7 +234,7 @@ class BaxterArmClient:
                 return 1
 
     def test_absolute(self):
-        """ Test robot's ability to position its gripper in absolute coordinates (base frame). """
+        """Test robot's ability to position its gripper in absolute coordinates (base frame)."""
         goal = Pose()
         roll = -math.pi / 2
         pitch = 0
@@ -256,7 +256,7 @@ class BaxterArmClient:
             result = self.left_client.get_result()
 
     def test_relative(self):
-        """ Test robot's ability to position its gripper relative to a given marker. """
+        """Test robot's ability to position its gripper relative to a given marker."""
         goal = Pose()
         roll = -math.pi / 2
         pitch = 0
@@ -293,16 +293,19 @@ class BaxterArmClient:
         self.go_to_position('pick', rod, 3, 0, 0, 0)
         self.go_to_position('pick', rod, 3, 0.1, 0, 0)
         rospy.sleep(2)
+        self.go_to_position('pick', rod, 3, 0, 0, -0.015)
         self.go_to_position('pick', rod, 3, 0, 0, 0)
         # Go to 2nd disk
         self.go_to_position('pick', rod, 2, 0, 0, 0)
         self.go_to_position('pick', rod, 2, 0.1, 0, 0)
         rospy.sleep(2)
+        self.go_to_position('pick', rod, 2, 0, 0, -0.015)
         self.go_to_position('pick', rod, 2, 0, 0, 0)
         # Go to 3rd disk
         self.go_to_position('pick', rod, 1, 0, 0, 0)
         self.go_to_position('pick', rod, 1, 0.1, 0, 0)
         rospy.sleep(2)
+        self.go_to_position('pick', rod, 1, 0, 0, -0.015)
         self.go_to_position('pick', rod, 1, 0, 0, 0)
 
     def calibration_all(self):

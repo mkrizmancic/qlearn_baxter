@@ -16,8 +16,8 @@ if __name__ == '__main__':
 
     rate = rospy.Rate(50)
     while not rospy.is_shutdown():
-        T_GB_p = Vector(-0.0833537421765, -0.00865195388513, -0.903851375509)
-        T_GB_Q = Rotation.Quaternion(0.005538, 0.003778, -0.001947, 0.999976)  # qx,qy,qz,qw
+        T_GB_p = Vector(-0.0924028561603, -0.0172428611168, -0.944187986747)
+        T_GB_Q = Rotation.Quaternion(-0.00993130, 0.00080579, -0.00441977, 0.99994059)  # qx,qy,qz,qw
         T_GB = Frame(T_GB_Q, T_GB_p)
 
         T_empty_p = Vector(0, 0, 0)
