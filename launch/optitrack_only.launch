@@ -1,0 +1,11 @@
+<launch>
+	<!-- Include file for streaming position from Optitrack -->
+	<include file="$(find qlearn_baxter)/launch/across.launch"/>
+
+	<!-- Start Optitrack node for broadcasting transformations -->
+	<node pkg="qlearn_baxter" type="OptitrackTF.py" name="OptitrackTF" output="screen">
+		<remap from="bax_head/pose" to="vrpn_client_node/kruna/pose"/>
+		<remap from="rods/pose" to="vrpn_client_node/stup/pose"/>
+	</node>
+
+</launch>
