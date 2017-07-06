@@ -10,7 +10,7 @@ Iako je ovaj paket namijenjen korištenju uz Baxter robota, implementacija Q-lea
 1. Instalirati ROS (Kinetic): http://wiki.ros.org/kinetic/Installation/Ubuntu
 2. Instalirati Baxter SDK prema [uputama](http://sdk.rethinkrobotics.com/wiki/Workstation_Setup#Step_3:_Create_Baxter_Development_Workspace)
 3. Instalirati MoveIt! za ROS Kinetic prema [uputama](http://moveit.ros.org/install/)
-4. Instalirati VRPN prema [uputama](#upute-za-instalaciju-vrpn-a)
+4. Instalirati VRPN prema [uputama](#upute-za-instalaciju-vrpn-a--instructions-for-installing-vrpn)
 5. Instalirati ovaj paket sljedećim naredbama:
 ```
 roscd
@@ -57,7 +57,7 @@ Although this package is intended to be used with Baxter robot, Q-Learning algor
 1. Install ROS (Kinetic): http://wiki.ros.org/kinetic/Installation/Ubuntu
 2. Install Baxter SDK following this [instructions](http://sdk.rethinkrobotics.com/wiki/Workstation_Setup#Step_3:_Create_Baxter_Development_Workspace)
 3. Install MoveIt! for ROS Kinetic following this [instructions](http://moveit.ros.org/install/)
-4. Install VRPN following this [instructions](#upute-za-instalaciju-vrpn-a)
+4. Install VRPN following this [instructions](#upute-za-instalaciju-vrpn-a--instructions-for-installing-vrpn)
 5. Install this package with follwing commands:
 ```
 roscd
