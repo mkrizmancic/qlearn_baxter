@@ -24,14 +24,7 @@ from Util import *
 # noinspection PyMethodMayBeStatic,PyUnusedLocal,PyNoneFunctionAssignment,PyRedundantParentheses,PyTypeChecker
 
 class BaxterArmClient:
-    """
-    Actionlib client for Baxter's arm. See more here: http://wiki.ros.org/actionlib
-
-    This class unfortunately contains some "magic numbers".
-    Replacing them with constants would make the code more difficult to read.
-    In order to understand what are they representing, 
-    please read 'Environment setup' section of README
-    """
+    """Actionlib client for Baxter's arm. See more here: http://wiki.ros.org/actionlib"""
 
     def __init__(self):
         """Initialize and start actionlib client."""

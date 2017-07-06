@@ -1,4 +1,14 @@
 #!/usr/bin/env python
+"""
+This script records the state of /bax_head to /base transformation and calculates average over time.
+
+One should record state of transformation multiple times and for multiple hand positions.
+Use implemented test functions to precisely move the arm to desired position.
+Total number of recordings must be the power of 2, e.g. 8 different arm positions with 2
+recordings for each.
+
+The script outputs values of transformation matrix that need to be copied to transformations.py
+"""
 from __future__ import division
 
 import rospy

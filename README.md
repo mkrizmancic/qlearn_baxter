@@ -19,7 +19,13 @@ git clone https://github.com/mkrizmancic/qlearn_baxter.git
 cd ..
 catkin_make
 ```
-
+6. Radi lakše interakcije s robotom preporuka je dodati sljedeće linije u ~/.bashrc:
+```
+alias baxter="./baxter.sh"  // postavlja Baxter ROS environment
+alias sonar="rostopic pub /robot/sonar/head_sonar/set_sonars_enabled std_msgs/UInt16 0" // Gasi sonar
+alias bax_enable="rosrun baxter_tools enable_robot.py -e" // Uključi robota
+alias bax_disable="rosrun baxter_tools enable_robot.py -d" // Isključi robota
+```
 
 ### Upute za pokretanje
 U datoteci [across.launch](../launch/across.launch) po potrebi promijeniti adresu servera.
@@ -65,6 +71,13 @@ cd ../src
 git clone https://github.com/mkrizmancic/qlearn_baxter.git
 cd ..
 catkin_make
+```
+6. For easier interaction with the robot, it is recommended to add following lines to ~/.bashrc:
+```
+alias baxter="./baxter.sh"  // set up Baxter ROS environment
+alias sonar="rostopic pub /robot/sonar/head_sonar/set_sonars_enabled std_msgs/UInt16 0" // Disable sonar
+alias bax_enable="rosrun baxter_tools enable_robot.py -e" // Enable robot
+alias bax_disable="rosrun baxter_tools enable_robot.py -d" // Disable robot
 ```
 
 ### Execution
